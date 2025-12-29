@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>App sopralluoghi - ZIP foto + questionario v21</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --c-text:#111827;
+      --c-muted:#6b7280;
+      --c-border:#e5e7eb;
+      --c-card:#ffffff;
+      --c-bg:#f5f5f5;
+      --bg-head:#eef2ff;
+      --bg-risk:#ecfeff;
+      --bg-unita:#ecfdf5;
+      --bg-summary:#fff7ed;
+      --bg-notes:#fdf2f8;
+      --bg-actions:#f1f5f9;
+      --bg-log:#111827;
+    }
+
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:.8rem;background:var(--c-bg);color:var(--c-text);}
+    h1{font-size:1.12rem;margin:0 0 .55rem 0;}
+
+    .card{background:var(--c-card);border-radius:12px;padding:.65rem .8rem;margin-bottom:.7rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.02);}
+    .card.head{background:var(--bg-head);}
+    .card.risk{background:var(--bg-risk);}
+    .card.unita{background:var(--bg-unita);}
+    .card.summary{background:var(--bg-summary);}
+    .card.notes{background:var(--bg-notes);}
+    .card.actions{background:var(--bg-actions);}
+    .card.log{background:#0b1220;color:#e5e7eb;}
+
+    .titleRow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .titleRow strong{font-size:.95rem}
+    .icon{font-size:1.02rem}
+
+    label{display:block;font-size:.78rem;margin-top:.35rem;margin-bottom:.12rem;}
+    input[type="text"],input[type="number"],select,textarea,button{
+      width:100%;box-sizing:border-box;font-size:.88rem;margin-bottom:.28rem;padding:.35rem .45rem;
+    }
+    textarea{min-height:70px;resize:vertical;}
+
+    button{border-radius:10px;border:1px solid rgba(0,0,0,.08);cursor:pointer;background:#fff;}
+    button.primary{background:#2563eb;color:#fff;border-color:#1d4ed8;}
+    button.secondary{background:#e5e7eb;color:#111827;border-color:#d1d5db;}
+    button.danger{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
+    .btn-small{width:auto;padding:.28rem .45rem;font-size:.82rem;border-radius:10px;display:inline-flex;align-items:center;gap:.35rem;}
+
+    .row{display:flex;flex-wrap:wrap;gap:.55rem;}
+    .row>div{flex:1 1 45%;}
+    @media(max-width:600px){.row>div{flex-basis:100%;}}
+
+    small{color:var(--c-muted);font-size:.74rem;font-style:italic;}
+    hr{border:none;border-top:1px solid var(--c-border);margin:.65rem 0;}
+
+    .box{border:1px solid var(--c-border);border-radius:12px;padding:.6rem;background:rgba(255,255,255,.7);margin-top:.55rem;}
+    .pill{display:inline-block;background:#f3f4f6;border:1px solid var(--c-border);border-radius:999px;padding:.12rem .5rem;font-size:.72rem;color:#374151;}
+    .chk-grid{display:flex;flex-wrap:wrap;gap:.25rem .8rem;}
+    .chk-grid label{margin:0;display:flex;align-items:center;gap:.32rem;font-size:.86rem;}
+
+    .inline{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.1rem 0 .25rem 0;}
+    .muted{color:var(--c-muted);}
+
+    /* File buttons */
+    input[type="file"]{display:none;}
+    .fileRow{display:flex;gap:.45rem;flex-wrap:wrap;margin:.3rem 0 .2rem 0;}
+    .fileRow .fileBtn{
+      display:flex;align-items:center;justify-content:center;gap:.32rem;
+      padding:.26rem .44rem;border-radius:10px;border:1px solid rgba(0,0,0,.12);
+      background:#fff;cursor:pointer;font-size:.82rem;min-width:112px;
+      user-select:none;
+    }
+    .fileRow .fileBtn .bI{font-size:1.0rem;}
+    .fileRow .fileBtn.capture{background:#eff6ff;border-color:#bfdbfe;}
+    .fileRow .fileBtn.upload{background:#f0fdf4;border-color:#bbf7d0;}
+
+    /* Per-section summary */
+    .secSummary{
+      margin-top:.38rem;
+      padding:.45rem .55rem;
+      border:1px dashed rgba(0,0,0,.18);
+      border-radius:10px;
+      background:rgba(255,255,255,.55);
+      font-size:.80rem;
+    }
+    .secSummary ul{margin:.22rem 0 0 1rem;padding:0;}
+    .secSummary li{margin:.12rem 0;}
+
+    #log{font-size:.74rem;white-space:pre-wrap;max-height:185px;overflow-y:auto;background:var(--bg-log);color:#e5e7eb;padding:.55rem;border-radius:10px;}
+    code{background:#f3f4f6;border:1px solid var(--c-border);border-radius:6px;padding:.05rem .22rem;}
+
+    /* Compact Volumi */
+    .volRow{display:flex;align-items:center;gap:.45rem;flex-wrap:nowrap}
+    .volRow .volDest{flex:1 1 auto;min-width:140px}
+    .volRow .pianiWrap{display:flex;align-items:center;gap:.28rem;flex:0 0 auto}
+    .iconBtn{width:auto;min-width:0;padding:.22rem .38rem;font-size:.82rem;line-height:1;border-radius:10px}
+    .iconBtn.round{border-radius:999px;padding:.18rem .36rem}
+    .volRow .volPiani{width:72px;margin:0;padding:.28rem .35rem;font-size:.86rem;text-align:center}
+    .volRow input[type="text"]{margin:0}
+    .volRow .trashBtn{margin:0}
+    .volLbl{font-size:.72rem;color:var(--c-muted);font-style:italic;margin:.12rem 0 .35rem 0}
+
+  
+    /* Unità compatta:  su una riga */
+    .unitaRow{display:flex;align-items:center;gap:.45rem;flex-wrap:nowrap}
+    .unitaRow .unitaNome{flex:1 1 auto;min-width:140px;margin:0}
+    .pianoWrap{display:flex;align-items:center;gap:.28rem}
+    .pianoWrap .pBtn{padding:.22rem .4rem;border-radius:999px}
+    .pianoWrap .unitaPiano{width:72px;text-align:center;margin:0}
+
+
+    .secActions{display:flex;gap:.3rem}
+    .refreshBtn{padding:.22rem .42rem;border-radius:999px;font-size:.78rem}
+
+
+    /* Finiture + Cantiere su una riga */
+    .row.inline2{display:flex;gap:.6rem;flex-wrap:nowrap}
+    .row.inline2 > div{flex:1 1 50%}
+    .row.inline2 select{margin-bottom:0}
+
+
+    .localeTitleNum{font-weight:700}
+
+    /* Topbar sticky */
+    body{padding-top:72px;}
+    .topbar{
+      position:fixed; top:0; left:0; right:0;
+      z-index:9999;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.9);
+      border-bottom:1px solid var(--c-border);
+      padding: .5rem .7rem;
+      display:flex; align-items:center; justify-content:space-between; gap:.6rem;
+    }
+    .topbar-title{font-weight:800; letter-spacing:.2px;}
+    .topbar-actions{display:flex; gap:.35rem; flex-wrap:wrap; justify-content:flex-end}
+    .topbar-actions button{padding:.32rem .55rem; border-radius:999px}
+    @media (max-width:420px){
+      body{padding-top:86px;}
+      .topbar{padding:.45rem .55rem}
+      .topbar-title{display:none;}
+    }
+
+
+    /* UNITÀ titles uppercase */
+    .card.unita .titleRow,
+    .card.unita .pill,
+    .card.unita .unitaTitle,
+    .card.unita .unitaDyn,
+    .card.unita .muted {
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+
+    /* Unità header row compact */
+    .unitaRow{display:flex;align-items:center;gap:.5rem}
+    .unitaRow .unitaNome{flex:1 1 auto;margin:0}
+    .unitaRow .pianoWrap{display:flex;align-items:center;gap:.25rem}
+
+
+    /* UNITÀ single-line header */
+    .unitaHeaderRow{
+      display:flex;
+      align-items:center;
+      gap:.45rem;
+      flex-wrap:nowrap;
+    }
+    .unitaHeaderRow .pill{flex:0 0 auto}
+    .unitaHeaderRow .unitaNome{flex:1 1 auto;margin:0}
+    .unitaHeaderRow .pianoWrap{display:flex;align-items:center;gap:.25rem}
+    .unitaHeaderRow .removeUnitaBtn{flex:0 0 auto}
+
+
+/* UNITÀ header all-in-one row */
+.unitaHeaderRow{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+}
+.unitaHeaderRow .pill{
+  padding:.2rem .45rem;
+  font-weight:700;
+}
+.unitaHeaderRow .unitaNome{
+  flex:1 1 auto;
+  min-width:0;
+}
+.unitaHeaderRow .pianoWrap input{
+  width:3.2rem;
+  text-align:center;
+}
+
+
+/* Collapse buttons */
+.collapseBtn{padding:.2rem .45rem;border-radius:999px;font-size:.8rem}
+.collapsed .collapsible{display:none}
+
+
+/* Numero U.I. control */
+.uiRow{display:flex;align-items:center;gap:.4rem;flex-wrap:nowrap;margin-top:.45rem}
+.uiRow .uiNum{width:84px;text-align:center;margin:0}
+.uiRow .uiBtn{padding:.22rem .45rem;border-radius:999px}
+
+
+/* Section titles: uppercase & larger */
+.sectionTitle,
+.card > h2,
+.card > h3,
+.titleRow,
+.section-header {
+  text-transform: uppercase;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+
+
+/* Titoletti (label) in grassetto */
+label{
+  font-weight:700;
+}
+
+
+/* Gerarchia testi: label > help */
+label{
+  font-weight:700;
+  font-size:0.95rem;
+}
+small, .muted, .help, .hint{
+  font-size:0.75rem;
+  font-weight:400;
+}
+
+
+/* Opzioni selezionabili (radio/checkbox) in grassetto */
+.chk-grid label,
+.radio-group label,
+.options label,
+input[type="checkbox"] + span,
+input[type="radio"] + span{
+  font-weight:700;
+}
+
+
+/* Spaziatura opzioni più compatta */
+.chk-grid{row-gap:.2rem; column-gap:.6rem}
+.chk-grid label{margin:0}
+
+/* Rimuovi grassetto SOLO dalle voci con checkbox */
+.chk-grid input[type="checkbox"] + span{
+  font-weight:400;
+}
+
+/* Mantieni grassetto per radio */
+.radio-group label,
+input[type="radio"] + span{
+  font-weight:700;
+}
+
+
+/* Radio options NON in grassetto */
+.radio-group label,
+input[type="radio"] + span{
+  font-weight:400 !important;
+}
+
+
+/* FORZA testo opzioni NON in grassetto */
+.chk-grid label,
+.chk-grid span,
+.radio-group label,
+.radio-group span{
+  font-weight:400 !important;
+}
+
+/* Mantieni grassetto solo per i titoletti veri */
+label{
+  font-weight:700;
+}
+
+
+/* Bottom bar (ex topbar) */
+.topbar{
+  position:fixed;
+  left:0; right:0; bottom:0; top:auto;
+  z-index:9999;
+  padding:.6rem .6rem;
+  border-top:1px solid rgba(0,0,0,.12);
+  border-bottom:none;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:saturate(180%) blur(10px);
+}
+body{ padding-bottom:86px; } /* spazio per bottom bar */
+
+/* Pulsanti bottom bar: +50% e quadrati */
+.topbar .btn-small{
+  font-size:1.05rem;
+  padding:.75rem .75rem;
+  min-width:56px;
+  min-height:56px;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.topbar .topbar-actions{
+  gap:.45rem;
+}
+
+
+/* Bottom bar più compatta */
+.topbar{
+  padding:.35rem .4rem;
+}
+body{ padding-bottom:64px; }
+
+/* Pulsanti compatti su UNICA riga */
+.topbar .topbar-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:.25rem;
+}
+
+.topbar .btn-small{
+  font-size:.9rem;
+  padding:.45rem .5rem;
+  min-width:44px;
+  min-height:44px;
+  border-radius:10px;
+}
+
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">Sopralluogo</span>
+    </div>
+    <div class="topbar-actions">
+      <button type="button" class="secondary btn-small" id="tbRefresh">🔁 Aggiorna</button>
+      <button type="button" class="primary btn-small" id="tbShare" title="Condividi (genera ZIP)">🔗</button>
+      <button type="button" class="secondary btn-small" id="tbDraftSave">💾 Bozza</button>
+      <button type="button" class="secondary btn-small" id="tbDraftLoad">♻️ Riprendi</button>
+      <button type="button" class="secondary btn-small" id="tbDraftClear">🧹 Pulisci</button>
+    </div>
+  </div>
+
+  <h1>App sopralluoghi - base v21</h1>
+
+  <div class="card head">
+    <div class="titleRow">
+      <strong><span class="icon">📌</span> PRATICA / SINISTRO</strong>
+    </div>
+    <div class="row">
+      <div>
+        <label for="praticaId">Pratica</label>
+        <input type="text" id="praticaId" placeholder="Es. 2025-AC-00423" />
+      </div>
+      <div>
+        <label for="assicurato">Assicurato</label>
+        <input type="text" id="assicurato" placeholder="Es. Rossi Mario / Condominio ..." />
+      </div>
+    </div>
+    <label for="refTag">Riferimento tag</label>
+    <input type="text" id="refTag" placeholder="Es. TAG-CRM / codice interno" />
+    <div class="row" style="align-items:flex-end;">
+      <div style="flex:1 1 70%;">
+        <label for="indirizzo">Indirizzo (GPS -> editabile)</label>
+        <input type="text" id="indirizzo" placeholder="Es. Via ..., n. ..., Comune" />
+        <small>Se GPS disponibile, precompila con coordinate.</small>
+      </div>
+      <div style="flex:1 1 30%;">
+        <button type="button" class="secondary btn-small" id="gpsBtn">📍 Rileva posizione</button>
+      </div>
+    </div>
+
+    <small>Apri la pagina con <code>?ref=...</code> per compilare automaticamente Pratica.</small>
+  </div>
+
+  <div class="card risk">
+    <div class="titleRow">
+      <strong><span class="icon">🏢</span> Panoramica del rischio</strong>
+    </div>
+
+    <label>Tipologia fabbricato</label>
+    <div class="chk-grid">
+      <label><input type="radio" name="tipologia" value="Condominio" /> Condominio</label>
+      <label><input type="radio" name="tipologia" value="Appartamento" /> Appartamento</label>
+      <label><input type="radio" name="tipologia" value="Villa" /> Villa</label>
+      <label><input type="radio" name="tipologia" value="Uffici" /> Uffici</label>
+      <label><input type="radio" name="tipologia" value="Capannone industriale" /> Capannone industriale</label>
+    </div>
+    <label for="tipologiaAltro">Altro (testo libero)</label>
+    <input type="text" id="tipologiaAltro" placeholder="Es. negozio, laboratorio, scuola..." />
+
+    
+    <div class="row uiRow">
+      <div style="flex:1 1 auto;">
+        <label for="uiCount">Numero U.I.</label>
+        <small><i>Campo informativo (non vincolante).</i></small>
+      </div>
+      <button type="button" class="secondary btn-small uiBtn" id="uiMinus">-</button>
+      <input type="number" id="uiCount" class="uiNum" value="1" min="0" step="1" />
+      <button type="button" class="secondary btn-small uiBtn" id="uiPlus">+</button>
+    </div>
+<hr />
+
+    <strong><span class="icon">🧱</span> Volumi</strong>
+    <small>Solo Destinazione e N. piani. Default: 2 blocchi (2° = Interrato e pertinenze, -1).</small>
+    <div id="volumiContainer"></div>
+    <div class="inline" style="margin-top:.45rem;">
+      <button type="button" class="secondary btn-small" id="addVolumeBtn">+ Aggiungi volume</button>
+    </div>
+
+    <hr />
+
+    <strong><span class="icon">🏗️</span> Caratteristiche costruttive</strong>
+    <small>Selezione multipla + campo note libero.</small>
+
+    <label>Struttura verticale</label>
+    <div class="chk-grid" id="svMulti">
+      <label><input type="checkbox" value="Cemento armato" checked /> Cemento armato</label>
+      <label><input type="checkbox" value="Muratura" /> Muratura</label>
+      <label><input type="checkbox" value="Mista" /> Mista</label>
+    </div>
+    <input type="text" id="svAltro" placeholder="Note libere" value="" />
+
+    <label>Struttura orizzontale</label>
+    <div class="chk-grid" id="soMulti">
+      <label><input type="checkbox" value="Laterocemento" checked /> Laterocemento</label>
+      <label><input type="checkbox" value="Legno" /> Legno</label>
+      <label><input type="checkbox" value="Acciaio" /> Acciaio</label>
+    </div>
+    <input type="text" id="soAltro" placeholder="Note libere" value="" />
+
+    <label>Facciate</label>
+    <div class="chk-grid" id="facMulti">
+      <label><input type="checkbox" value="Intonaco" checked /> Intonaco</label>
+      <label><input type="checkbox" value="Rivestimento" /> Rivestimento</label>
+      <label><input type="checkbox" value="Cappotto" /> Cappotto</label>
+    </div>
+    <input type="text" id="facAltro" placeholder="Note libere" value="" />
+
+    <label>Copertura</label>
+    <div class="chk-grid" id="copMulti">
+      <label><input type="checkbox" value="A falde (coppi/tegole)" checked /> A falde (coppi/tegole)</label>
+      <label><input type="checkbox" value="Piana (guaina)" /> Piana (guaina)</label>
+      <label><input type="checkbox" value="Lamiera/pannelli" /> Lamiera/pannelli</label>
+    </div>
+    <input type="text" id="copAltro" placeholder="Note libere" value="" />
+
+    <div class="row inline2">
+      <div>
+        <label for="finiture">Finiture</label>
+        <select id="finiture">
+          <option value="">- n/d -</option>
+          <option value="scarse">Scarse</option>
+          <option value="medie" selected>Medie</option>
+          <option value="alte">Alte</option>
+        </select>
+      </div>
+      <div>
+        <label for="cantiere">Cantiere</label>
+        <select id="cantiere">
+          <option value="">- n/d -</option>
+          <option value="normale" selected>Normale</option>
+          <option value="penalizzante">Penalizzante</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="inline">
+        <input type="checkbox" id="ascensore" />
+        <label for="ascensore" style="margin:0;">Ascensore</label>
+      </div>
+      <div class="inline">
+        <input type="checkbox" id="pannelliFV" />
+        <label for="pannelliFV" style="margin:0;">Pannelli FV</label>
+      </div>
+    </div>
+<hr />
+
+    <strong><span class="icon">🖼️</span> Foto panoramica del rischio</strong>
+    <small>Salvate in cartella unica <b>FOTO</b> con nome <code>-PANORAMICA-###</code>.</small>
+
+    <div class="fileRow">
+      <label class="fileBtn capture" for="photoRiskCapture"><span class="bI">📷</span> Scatta</label>
+      <input type="file" id="photoRiskCapture" accept="image/*" capture="environment" multiple />
+
+      <label class="fileBtn upload" for="photoRiskUpload"><span class="bI">🖼️</span> Carica</label>
+      <input type="file" id="photoRiskUpload" accept="image/*" multiple />
+    </div>
+
+    <div class="secSummary" id="secSum_pan">
+      <div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span></div>
+      <div class="muted">Nessuna foto.</div>
+    </div>
+  </div>
+
+  <div class="card unita">
+    <div class="titleRow">
+      <strong><span class="icon">🏠</span> UNITA</strong>
+    </div>
+    <small>Sezione definita da <b></b>. Dentro aggiungi i Locali. Ogni locale ha foto Scatta/Carica e riepilogo sezione.</small>
+    <div id="unitaContainer"></div>
+    <div class="inline" style="justify-content:flex-end;margin-top:.5rem;">
+      <button type="button" class="secondary btn-small" id="addUnitaBtn">+ Aggiungi unita</button>
+    </div>
+  </div>
+
+  <div class="card summary">
+    <div class="titleRow">
+      <strong><span class="icon">🧾</span> Riepilogo finale foto</strong>
+      <button type="button" class="secondary btn-small" id="refreshNamesBtn">🔁 Aggiorna nomi foto</button>
+    </div>
+    <small>Se modifichi Nome/Piano/Locale/Danno, usa “Aggiorna nomi foto” per riallineare l'elenco (rinomina logica, non il file sul telefono).</small>
+    <div class="secSummary" id="finalList">
+      <div class="muted">Nessuna foto.</div>
+    </div>
+  </div>
+
+  <div class="card notes">
+    <div class="titleRow">
+      <strong><span class="icon">📝</span> Note generali</strong>
+    </div>
+    <textarea id="noteGenerali" placeholder="Es. accesso regolare, presenti amministratore e inquilino..."></textarea>
+  </div>
+
+  <div class="card actions">
+    <div class="titleRow">
+      <strong><span class="icon">📦</span> Output</strong>
+    </div>
+    <div class="row">
+      <div><button class="primary" type="button" id="generateZipBtn">Genera ZIP sopralluogo</button></div>
+      <div><button class="secondary" type="button" id="resetBtn">Svuota dati</button></div>
+    </div>
+    <small>ZIP contiene: cartella <b>FOTO</b> + report TXT + report JSON.</small>
+  </div>
+
+  <div class="card log">
+    <div class="titleRow">
+      <strong><span class="icon">🧪</span> Log</strong>
+    </div>
+    <pre id="log"></pre>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script>
+    
+    // --- IndexedDB (bozza offline: dati + foto)
+    const IDB_NAME = "sopralluoghi_offline";
+    const IDB_VER = 1;
+    const IDB_STORE_PHOTOS = "photos";
+    const IDB_STORE_DRAFT = "draft";
+
+    function uid(){
+      if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
+    }
+
+    function openDB(){
+      return new Promise((resolve, reject)=>{
+        const req = indexedDB.open(IDB_NAME, IDB_VER);
+        req.onupgradeneeded = (e)=>{
+          const db = req.result;
+          if(!db.objectStoreNames.contains(IDB_STORE_PHOTOS)){
+            const s = db.createObjectStore(IDB_STORE_PHOTOS, { keyPath: "id" });
+            s.createIndex("createdAt", "createdAt", { unique:false });
+          }
+          if(!db.objectStoreNames.contains(IDB_STORE_DRAFT)){
+            db.createObjectStore(IDB_STORE_DRAFT, { keyPath: "key" });
+          }
+        };
+        req.onsuccess = ()=> resolve(req.result);
+        req.onerror = ()=> reject(req.error);
+      });
+    }
+
+    async function idbPut(storeName, value){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readwrite");
+        tx.oncomplete = ()=>{ db.close(); resolve(true); };
+        tx.onerror = ()=>{ db.close(); reject(tx.error); };
+        tx.objectStore(storeName).put(value);
+      });
+    }
+
+    async function idbGetAll(storeName){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = ()=>{ db.close(); resolve(req.result||[]); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
+      });
+    }
+
+    async function idbGet(storeName, key){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).get(key);
+        req.onsuccess = ()=>{ db.close(); resolve(req.result||null); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
+      });
+    }
+
+    async function idbClear(storeName){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readwrite");
+        const req = tx.objectStore(storeName).clear();
+        req.onsuccess = ()=>{ db.close(); resolve(true); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
+      });
+    }
+
+    async function savePhotoToOffline(item){
+      // item: {id, file, meta, previewName}
+      try{
+        const blob = item.file;
+        await idbPut(IDB_STORE_PHOTOS, {
+          id: item.id,
+          createdAt: Date.now(),
+          originalName: item.file?.name || "photo.jpg",
+          mime: item.file?.type || "image/jpeg",
+          meta: item.meta,
+          blob
+        });
+      }catch(err){
+        log("⚠️ Offline foto non salvata: " + (err?.message||err));
+      }
+    }
+
+    async function loadOfflinePhotos(){
+      const rows = await idbGetAll(IDB_STORE_PHOTOS);
+      // order by createdAt
+      rows.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      const list = [];
+      for(const r of rows){
+        let fileObj = null;
+        try{
+          fileObj = new File([r.blob], r.originalName || "photo.jpg", { type: r.mime || "image/jpeg" });
+        }catch(e){
+          // fallback
+          fileObj = r.blob;
+          fileObj.name = r.originalName || "photo.jpg";
+        }
+        list.push({ id:r.id, file:fileObj, meta:r.meta||{}, previewName:r.originalName||"photo.jpg" });
+      }
+      return list;
+    }
+
+    async function saveDraft(){
+      const draft = {
+        key:"current",
+        savedAt: Date.now(),
+        header: {
+          pratica: (document.getElementById("pratica")?.value||"").trim(),
+          assicurato: (document.getElementById("assicurato")?.value||"").trim(),
+          refTag: (document.getElementById("refTag")?.value||"").trim(),
+          indirizzo: (document.getElementById("indirizzo")?.value||"").trim()
+        },
+        photos: dataStore.photos.map(p=>({id:p.id, meta:p.meta, previewName:p.previewName}))
+      };
+      await idbPut(IDB_STORE_DRAFT, draft);
+      log("💾 Bozza salvata (offline).");
+    }
+
+    async function loadDraft(){
+      const d = await idbGet(IDB_STORE_DRAFT, "current");
+      if(!d){
+        log("Nessuna bozza offline trovata.");
+        return false;
+      }
+      // restore header fields
+      if(d.header){
+        if(document.getElementById("pratica")) document.getElementById("pratica").value = d.header.pratica||"";
+        if(document.getElementById("assicurato")) document.getElementById("assicurato").value = d.header.assicurato||"";
+        if(document.getElementById("refTag")) document.getElementById("refTag").value = d.header.refTag||"";
+        if(document.getElementById("indirizzo")) document.getElementById("indirizzo").value = d.header.indirizzo||"";
+      }
+      // restore photos from store
+      dataStore.photos = await loadOfflinePhotos();
+      recomputePreviewNames();
+      updateAllSummaries();
+      log("♻️ Bozza ripristinata: " + dataStore.photos.length + " foto.");
+      return true;
+    }
+
+    async function clearDraftAndPhotos(){
+      await idbClear(IDB_STORE_PHOTOS);
+      await idbClear(IDB_STORE_DRAFT);
+      log("🧹 Offline pulito (bozza + foto).");
+    }
+
+
+const dataStore = { photos: [], noteGenerali: "" };
+    let gpsData = null;
+
+    function log(msg){
+      const el=document.getElementById("log");
+      const ts=new Date().toISOString().substring(11,19);
+      el.textContent += "["+ts+"] "+msg+"\n";
+      el.scrollTop = el.scrollHeight;
+    }
+    function sanitize(s){ return (s||"").toString().replace(/[^a-zA-Z0-9_\-]/g,"_"); }
+    function getRadioValue(name){
+      const el=document.querySelector("input[name='"+name+"']:checked");
+      return el ? el.value : "";
+    }
+    function getCheckedValues(containerId){
+      const box=document.getElementById(containerId);
+      if(!box) return [];
+      return Array.from(box.querySelectorAll("input[type='checkbox']:checked")).map(x=>x.value);
+    }
+
+    function acquireGPS(){
+      if(!navigator.geolocation){ log("GPS non supportato"); return; }
+      navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+          gpsData={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:new Date().toISOString()};
+          log("GPS acquisito: "+gpsData.lat.toFixed(6)+", "+gpsData.lng.toFixed(6));
+          const indirizzoEl=document.getElementById("indirizzo");
+          if(!indirizzoEl.value) indirizzoEl.value="Coord: "+gpsData.lat.toFixed(6)+", "+gpsData.lng.toFixed(6);
+        },
+        (err)=>log("GPS non disponibile: "+err.message)
+      );
+    }
+    function readRefFromUrl(){
+      const params=new URLSearchParams(window.location.search);
+      const ref=params.get("ref")||params.get("prot")||params.get("id")||"";
+      if(ref){ document.getElementById("praticaId").value=ref; log("Pratica da URL: "+ref); }
+    }
+
+    function createVolumeCard(destDefault="Residenziale", pianiDefault=1){
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      
+      wrap.innerHTML = `
+        <div class="volLbl">Destinazione + N. piani (accetta negativi)</div>
+        <div class="volRow">
+          <input type="text" class="volDest" value="${destDefault}" placeholder="Destinazione" />
+          <div class="pianiWrap">
+            <button type="button" class="secondary btn-small iconBtn round volMinus">-</button>
+            <input type="number" class="volPiani" value="${pianiDefault}" step="1">
+            <button type="button" class="secondary btn-small iconBtn round volPlus">+</button>
+          </div>
+          <button type="button" class="danger btn-small iconBtn trashBtn volRemove" title="Elimina volume">🗑️</button>
+        </div>
+      `;
+
+      wrap.querySelector(".volMinus").addEventListener("click",()=>{
+        const el=wrap.querySelector(".volPiani");
+        el.value = (parseInt(el.value||"0",10)-1);
+      });
+      wrap.querySelector(".volPlus").addEventListener("click",()=>{
+        const el=wrap.querySelector(".volPiani");
+        el.value = (parseInt(el.value||"0",10)+1);
+      });
+      wrap.querySelector(".volRemove").addEventListener("click",()=>wrap.remove());
+      return wrap;
+    }
+    function getVolumi(){
+      const nodes=document.querySelectorAll("#volumiContainer .box");
+      return Array.from(nodes).map((n)=>({
+        destinazione:(n.querySelector(".volDest")?.value||"").trim(),
+        piani:parseInt(n.querySelector(".volPiani")?.value||"0",10)
+      }));
+    }
+
+    const LOCAL_PRESETS=["Ingresso","Soggiorno","Cucina","Bagno","Camera","Disimpegno","Corridoio","Balcone","Terrazzo","Tetto","Facciata","Cantina","Box"];
+    const DANNO_PRESETS=["danni AC","RRG","cristallo","guasti ladri"];
+
+    function createLocaleCard(){
+      const uid = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+      const capId = "cap_" + uid;
+      const upId  = "up_" + uid;
+
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      wrap.dataset.localeUid = uid;
+      wrap.innerHTML = `
+        <div class="titleRow" style="margin-bottom:.2rem;">
+          <div class="inline" style="gap:.45rem;margin:0;">
+            <span class="pill">Locale</span> <span class="localeTitleNum">#<span class="localeIdx">1</span></span>
+            <span class="muted"> e foto</span>
+          </div>
+          <button type="button" class="danger btn-small removeLocaleBtn">🗑️ Elimina</button>
+        </div>
+
+        <label>Locale</label>
+        <div class="chk-grid localeChecks"></div>
+        <input type="text" class="localeAltro" placeholder="Altro locale (testo libero)" />
+
+        <label>Tipi di danno</label>
+        <div class="chk-grid dannoChecks"></div>
+        <input type="text" class="dannoAltro" placeholder="Altro tipo danno (testo libero)" />
+
+        <label>Note locale</label>
+        <textarea class="noteLocale" placeholder="Note libere sul locale/danno"></textarea>
+
+        <div class="fileRow">
+          <label class="fileBtn capture" for="${capId}"><span class="bI">📷</span> Scatta</label>
+          <input type="file" id="${capId}" class="photoCaptureLocale" accept="image/*" capture="environment" multiple />
+
+          <label class="fileBtn upload" for="${upId}"><span class="bI">🖼️</span> Carica</label>
+          <input type="file" id="${upId}" class="photoUploadLocale" accept="image/*" multiple />
+        </div>
+
+        <div class="secSummary" id="sum_${uid}">
+          <div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span></div>
+          <div class="muted">Nessuna foto.</div>
+        </div>
+      `;
+
+      const localeChecks=wrap.querySelector(".localeChecks");
+      LOCAL_PRESETS.forEach(v=>{
+        const lab=document.createElement("label");
+        lab.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+        localeChecks.appendChild(lab);
+      });
+
+      const dannoChecks=wrap.querySelector(".dannoChecks");
+      DANNO_PRESETS.forEach(v=>{
+        const lab=document.createElement("label");
+        lab.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+        dannoChecks.appendChild(lab);
+      });
+
+      wrap.querySelector(".removeLocaleBtn").addEventListener("click",()=>{ const u=wrap.closest("[data-unita-uid]"); wrap.remove(); renumberLocales(u); refreshAllSummaries(); });
+      return wrap;
+    }
+
+    function createUnitaCard(){
+      const uid = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      wrap.dataset.unitaUid = uid;
+      wrap.innerHTML = `
+        <div class="titleRow">
+          <div class="inline" style="gap:.45rem;margin:0;">
+            <span class="pill">Unita</span>
+            <span class="muted"></span>
+          </div>
+          <button type="button" class="danger btn-small removeUnitaBtn">🗑️ Elimina</button>
+        </div>
+
+        <div class="row">
+          <div>
+            
+        <div class="unitaRow">
+          <input type="text" class="unitaNome" placeholder="Es. Rossi / Interno 5" />
+          <div class="pianoWrap">
+            <button type="button" class="secondary btn-small pBtn pianoMinus">-</button>
+            <input type="number" class="unitaPiano" placeholder="P" step="1" />
+            <button type="button" class="secondary btn-small pBtn pianoPlus">+</button>
+          </div>
+        </div>
+
+        </div>
+<div class="localiContainer"></div>
+
+        <div class="inline" style="justify-content:flex-end;margin-top:.45rem;">
+          <button type="button" class="secondary btn-small addLocaleBtn">+ Aggiungi locale</button>
+        </div>
+      `;
+
+      const localiContainer=wrap.querySelector(".localiContainer");
+      const nomeEl = wrap.querySelector('.unitaNome');
+      const pianoEl = wrap.querySelector('.unitaPiano');
+
+      wrap.querySelector('.pianoMinus').addEventListener('click',()=>{
+        pianoEl.value = (parseInt(pianoEl.value||'0',10)-1);
+      });
+      wrap.querySelector('.pianoPlus').addEventListener('click',()=>{
+        pianoEl.value = (parseInt(pianoEl.value||'0',10)+1);
+      });
+
+      wrap.querySelector(".addLocaleBtn").addEventListener("click",()=>{
+        const loc=createLocaleCard();
+        localiContainer.appendChild(loc);
+        bindLocalePhotoHandlers(wrap, loc);
+        renumberLocales(wrap);
+        refreshAllSummaries();
+      });
+
+      const loc0=createLocaleCard();
+      localiContainer.appendChild(loc0);
+      renumberLocales(wrap);
+
+      wrap.querySelector(".removeUnitaBtn").addEventListener("click",()=>wrap.remove());
+      return wrap;
+    }
+
+    // --- per-sezione + finale
+    function sectionKey(meta){
+      if(meta.type==="PANORAMICA") return "PANORAMICA";
+      return meta.localeUid ? ("LOCALE:" + meta.localeUid) : "LOCALE:ND";
+    }
+
+    function updateSectionSummary(secKey){
+      if(secKey==="PANORAMICA"){
+        const box=document.getElementById("secSum_pan");
+        const items=dataStore.photos.filter(p=>sectionKey(p.meta)===secKey);
+        if(!items.length){
+          box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span></div><div class="muted">Nessuna foto.</div>`;
+          return;
+        }
+        const names = items.map(p=>({name:(p.previewName||p.file.name), ref:p}));
+        box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span> - ${items.length} foto</div><ul>${names.map(n=>`<li>${n.name} <button class='danger btn-small' onclick='removePhoto("${secKey}", "${n.name}")'>🗑️</button></li>`).join("")}</ul>`;
+        return;
+      }
+      if(secKey.startsWith("LOCALE:")){
+        const uid=secKey.split(":")[1];
+        const box=document.getElementById("sum_"+uid);
+        if(!box) return;
+        const items=dataStore.photos.filter(p=>sectionKey(p.meta)===secKey);
+        if(!items.length){
+          box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span></div><div class="muted">Nessuna foto.</div>`;
+          return;
+        }
+        const names=items.map(p=>({name:(p.previewName||p.file.name), ref:p}));
+        box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span> - ${items.length} foto</div><ul>${names.map(n=>`<li>${n.name} <button class='danger btn-small' onclick='removePhoto("${secKey}", "${n.name}")'>🗑️</button></li>`).join("")}</ul>`;
+      }
+    }
+
+    function updateFinalSummary(){
+      const box=document.getElementById("finalList");
+      if(!dataStore.photos.length){
+        box.innerHTML = `<div class="muted">Nessuna foto.</div>`;
+        return;
+      }
+      const items = dataStore.photos.map((p,i)=>{
+        const sec = (p.meta.type==="PANORAMICA") ? "PANORAMICA" : `UNITA ${p.meta.unitaPiano||""} ${p.meta.unitaNome||""} - ${((p.meta.localeTags||[]).join("+")||p.meta.localeAltro||"LOCALE")} - ${((p.meta.danniTags||[]).join("+")||p.meta.danniAltro||"DANNO")}`;
+        return { idx:i+1, sec, name: p.previewName || p.file.name };
+      });
+
+      box.innerHTML = `
+        <div><b>Totale</b>: ${items.length} foto</div>
+        <ul>
+          ${items.map(x=>`<li>${x.idx}. <span class="muted">[${x.sec}]</span> ${x.name}</li>`).join("")}
+        </ul>
+      `;
+    }
+
+
+    function updateAllSummaries(){
+      // recompute per-section summaries from photos
+      const keys = new Set(dataStore.photos.map(p=>sectionKey(p.meta)));
+      for(const k of keys){
+        updateSectionSummary(k);
+      }
+      updateFinalSummary();
+    }
+
+    function refreshAllSummaries(){
+      updateSectionSummary("PANORAMICA");
+      const localeIds = Array.from(document.querySelectorAll("[id^='sum_']")).map(el=>el.id.replace("sum_",""));
+      for(const uid of localeIds){
+        updateSectionSummary("LOCALE:"+uid);
+      }
+      updateFinalSummary();
+    }
+
+    // --- add photos
+    async function addPhotos(files, meta){
+      if(!files || !files.length) return;
+      for(const file of Array.from(files)){
+        const id = uid();
+        const item = { id, file, meta:{...meta}, previewName: file.name };
+        dataStore.photos.push(item);
+        // autosave offline
+        savePhotoToOffline(item);
+        log("Foto aggiunta: " + file.name);
+      }
+      updateSectionSummary(sectionKey(meta));
+      updateFinalSummary();
+    }
+
+    // --- bind locale handlers
+    function bindLocalePhotoHandlers(unitaEl, localeEl){
+      const unitaNome = () => (unitaEl.querySelector(".unitaNome")?.value||"").trim();
+      const unitaPiano = () => (unitaEl.querySelector(".unitaPiano")?.value||"").trim();
+
+      const cap=localeEl.querySelector(".photoCaptureLocale");
+      const up=localeEl.querySelector(".photoUploadLocale");
+      if(cap.dataset.bound==="1") return;
+
+      const handler = async (files)=>{
+        const localeTags = Array.from(localeEl.querySelectorAll(".localeChecks input[type='checkbox']:checked")).map(x=>x.value);
+        const localeAltro = (localeEl.querySelector(".localeAltro")?.value||"").trim();
+        const danniTags = Array.from(localeEl.querySelectorAll(".dannoChecks input[type='checkbox']:checked")).map(x=>x.value);
+        const danniAltro = (localeEl.querySelector(".dannoAltro")?.value||"").trim();
+        const note = (localeEl.querySelector(".noteLocale")?.value||"").trim();
+
+        const meta = {
+          type:"LOCALE",
+          unitaNome: unitaNome(),
+          unitaPiano: unitaPiano(),
+          localeTags, localeAltro,
+          danniTags, danniAltro,
+          note,
+          localeUid: localeEl.dataset.localeUid
+        };
+        await addPhotos(files, meta);
+      };
+
+      cap.addEventListener("change", async (e)=>{ await handler(e.target.files); e.target.value=""; });
+      up.addEventListener("change", async (e)=>{ await handler(e.target.files); e.target.value=""; });
+
+      cap.dataset.bound="1";
+      up.dataset.bound="1";
+    }
+
+    // --- recompute names based on current UI selections
+    function recomputePreviewNames(){
+      const counters = {};
+      for(const item of dataStore.photos){
+        const original=item.file.name||"";
+        const ext=original.includes(".") ? original.split(".").pop() : "jpg";
+
+        if(item.meta.type==="PANORAMICA"){
+          const key="PANORAMICA";
+          counters[key]=(counters[key]||0)+1;
+          const idx=String(counters[key]).padStart(3,"0");
+          item.previewName = "-PANORAMICA-" + idx + "." + ext;
+          continue;
+        }
+
+        // For locale photos: fetch current locale + unit data
+        const uid = item.meta.localeUid;
+        const localeEl = uid ? document.querySelector("[data-locale-uid='"+uid+"']") : null;
+        if(localeEl){
+          const unitEl = localeEl.closest("[data-unita-uid]");
+          const uNome = (unitEl?.querySelector(".unitaNome")?.value||"").trim();
+          const uPiano = (unitEl?.querySelector(".unitaPiano")?.value||"").trim();
+
+          const localeTags = Array.from(localeEl.querySelectorAll(".localeChecks input[type='checkbox']:checked")).map(x=>x.value);
+          const localeAltro = (localeEl.querySelector(".localeAltro")?.value||"").trim();
+          const danniTags = Array.from(localeEl.querySelectorAll(".dannoChecks input[type='checkbox']:checked")).map(x=>x.value);
+          const danniAltro = (localeEl.querySelector(".dannoAltro")?.value||"").trim();
+          const note = (localeEl.querySelector(".noteLocale")?.value||"").trim();
+
+          item.meta.unitaNome = uNome;
+          item.meta.unitaPiano = uPiano;
+          item.meta.localeTags = localeTags;
+          item.meta.localeAltro = localeAltro;
+          item.meta.danniTags = danniTags;
+          item.meta.danniAltro = danniAltro;
+          item.meta.note = note;
+        }
+
+        const pianoKey = sanitize(item.meta.unitaPiano || "P_ND");
+        let rawNomeKey = (item.meta.unitaNome || "NOME");
+        rawNomeKey = rawNomeKey.replace(/^UI[_\- ]*/i, "");
+        const nomeKey = sanitize(rawNomeKey);
+        const locLabelKey = (item.meta.localeTags && item.meta.localeTags.length) ? item.meta.localeTags.join("+") : (item.meta.localeAltro || "LOCALE");
+        const localeKey = sanitize(locLabelKey);
+        const dannoLabelKey = (item.meta.danniTags && item.meta.danniTags.length) ? item.meta.danniTags.join("+") : (item.meta.danniAltro || "DANNO");
+        const dannoKey = sanitize(dannoLabelKey);
+
+        const key = [pianoKey,nomeKey,localeKey,dannoKey].join("_");
+        counters[key]=(counters[key]||0)+1;
+        const idx=String(counters[key]).padStart(3,"0");
+
+        item.previewName = "-" + pianoKey + "_" + nomeKey + "_" + localeKey + "_" + dannoKey + "-" + idx + "." + ext;
+      }
+
+      refreshAllSummaries();
+      log("Nomi foto aggiornati (preview).");
+    }
+
+    
+    function removePhoto(secKey, name){
+      if(!confirm("Eliminare la foto selezionata?")) return;
+      const idx = dataStore.photos.findIndex(p => (p.previewName||p.file.name) === name && sectionKey(p.meta)===secKey);
+      if(idx>-1){
+        dataStore.photos.splice(idx,1);
+        log("Foto eliminata: "+name);
+        refreshAllSummaries();
+      }
+    }
+
+
+    function refreshSection(secKey){
+      log("Aggiorna nomi foto: " + secKey);
+      refreshAllSummaries();
+    }
+
+
+    function renumberLocales(unitEl){
+      if(!unitEl) return;
+      const locales = Array.from(unitEl.querySelectorAll(".localiContainer .box[data-locale-uid]"));
+      locales.forEach((loc, i)=>{
+        const idxEl = loc.querySelector(".localeIdx");
+        if(idxEl) idxEl.textContent = String(i+1);
+      });
+    }
+
+
+    // Numero U.I. (+/-)
+    const uiCountEl = document.getElementById('uiCount');
+    const uiMinus = document.getElementById('uiMinus');
+    const uiPlus = document.getElementById('uiPlus');
+    if(uiCountEl && uiMinus && uiPlus){
+      uiMinus.addEventListener('click', ()=>{
+        const v = parseInt(uiCountEl.value||"0",10);
+        uiCountEl.value = String(Math.max(0, v-1));
+      });
+      uiPlus.addEventListener('click', ()=>{
+        const v = parseInt(uiCountEl.value||"0",10);
+        uiCountEl.value = String(v+1);
+      });
+    }
+
+
+    // Auto-detect offline photos (se presenti) e carica in memoria
+    (async ()=>{
+      try{
+        const existing = await idbGetAll(IDB_STORE_PHOTOS);
+        if(existing && existing.length && dataStore.photos.length===0){
+          dataStore.photos = await loadOfflinePhotos();
+          recomputePreviewNames();
+          updateAllSummaries();
+          log("📦 Trovate " + existing.length + " foto offline (non ancora inviate). Usa ♻️ Riprendi per ricaricare anche i campi.");
+        }
+      }catch(e){}
+    })();
+
+// --- INIT
+    readRefFromUrl();
+
+    // GPS su richiesta
+    const gpsBtn = document.getElementById('gpsBtn');
+    if(gpsBtn){
+      gpsBtn.addEventListener('click', ()=>acquireGPS());
+    }
+
+    const volCont=document.getElementById("volumiContainer");
+    volCont.appendChild(createVolumeCard("Residenziale", 1));
+    volCont.appendChild(createVolumeCard("Interrato e pertinenze", -1));
+    document.getElementById("addVolumeBtn").addEventListener("click",()=>volCont.appendChild(createVolumeCard()));
+
+    const unitaCont=document.getElementById("unitaContainer");
+    const u0=createUnitaCard();
+    unitaCont.appendChild(u0);
+    u0.querySelectorAll(".localiContainer .box[data-locale-uid]").forEach(loc=>bindLocalePhotoHandlers(u0, loc));
+
+    document.getElementById("addUnitaBtn").addEventListener("click",()=>{
+      const u=createUnitaCard();
+      unitaCont.appendChild(u);
+      u.querySelectorAll(".localiContainer .box[data-locale-uid]").forEach(loc=>bindLocalePhotoHandlers(u, loc));
+      refreshAllSummaries();
+    });
+
+    async function addPano(files){
+      if(!files||!files.length) return;
+      const meta={ type:"PANORAMICA" };
+      await addPhotos(files, meta);
+    }
+    document.getElementById("photoRiskCapture").addEventListener("change", async (e)=>{ await addPano(e.target.files); e.target.value=""; });
+    document.getElementById("photoRiskUpload").addEventListener("change", async (e)=>{ await addPano(e.target.files); e.target.value=""; });
+
+    document.getElementById("noteGenerali").addEventListener("input",(e)=>dataStore.noteGenerali=e.target.value);
+
+    document.getElementById("resetBtn").addEventListener("click",()=>{
+      if(!confirm("Sicuro di svuotare foto e note?")) return;
+      dataStore.photos=[];
+      dataStore.noteGenerali="";
+      document.getElementById("noteGenerali").value="";
+      document.getElementById("log").textContent="";
+      refreshAllSummaries();
+      acquireGPS();
+      log("Dati azzerati.");
+    });
+
+    document.getElementById("refreshNamesBtn").addEventListener("click", ()=>{
+      if(!dataStore.photos.length){ alert("Nessuna foto da aggiornare."); return; }
+      recomputePreviewNames();
+    });
+
+    
+    async function buildZipPackage(){
+      if(!dataStore.photos.length){ throw new Error("Non ci sono foto da salvare."); }
+
+      // riallinea nomi
+      recomputePreviewNames();
+
+      const zip = new JSZip();
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      const now = new Date();
+      const baseRef = sanitize((document.getElementById("praticaId")?.value?.trim()
+        || document.getElementById("pratica")?.value?.trim()
+        || document.getElementById("refTag")?.value?.trim()) || "sopralluogo");
+
+      const filename = baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      const blob = await zip.generateAsync({type:"blob"});
+      return { blob, filename };
+    }
+
+    function buildMailText(){
+      const pratica = (document.getElementById("pratica")?.value||"").trim();
+      const assicurato = (document.getElementById("assicurato")?.value||"").trim();
+      const refTag = (document.getElementById("refTag")?.value||"").trim();
+      const indirizzo = (document.getElementById("indirizzo")?.value||"").trim();
+      const nfoto = dataStore.photos.length;
+
+      return [
+        "Trasmissione sopralluogo - report sintetico",
+        "",
+        "Pratica/Sinistro: " + (pratica || "-"),
+        "Assicurato: " + (assicurato || "-"),
+        "Riferimento tag: " + (refTag || "-"),
+        "Indirizzo: " + (indirizzo || "-"),
+        "Foto allegate (ZIP): " + nfoto,
+        "",
+        "Note: (se necessario integrare)",
+        "- "
+      ].join("\n");
+    }
+
+    async function shareZipByEmail(){
+      try{
+        const { blob, filename } = await buildZipPackage();
+        const file = new File([blob], filename, {type:"application/zip"});
+        const text = buildMailText();
+        const title = "Sopralluogo - " + (document.getElementById("refTag")?.value?.trim() || "ZIP");
+
+        // Web Share con file: funziona bene solo su contesto sicuro (https o localhost)
+        const isSecure = (window.isSecureContext || location.hostname === "127.0.0.1" || location.hostname === "localhost");
+        const canShareFiles = !!(isSecure && navigator.share && navigator.canShare && navigator.canShare({ files:[file] }));
+
+        if(canShareFiles){
+          try{
+            await navigator.share({ title, text, files:[file] });
+            log("📧 Condivisione avviata (scegli Email/Outlook/Gmail).");
+            return;
+          }catch(e){
+            // se l'utente annulla o il sistema nega, fallback
+            log("📧 Share non disponibile (" + (e?.message||"") + "), fallback mailto.");
+          }
+        }
+
+        // Fallback affidabile: scarica ZIP + apre mailto con testo (allegato manuale)
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+
+        const subject = encodeURIComponent(title);
+        const body = encodeURIComponent(text + "\n\n(Allega il file ZIP appena scaricato: " + filename + ")");
+        window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+        log("📧 Mailto aperto (allega manualmente lo ZIP).");
+      }catch(err){
+        alert(err?.message || "Errore invio email.");
+      }
+    }
+
+
+    async function buildZipPackage(){
+      if(!dataStore.photos.length){ throw new Error("Non ci sono foto da salvare."); }
+      recomputePreviewNames();
+
+      const zip = new JSZip();
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      const now = new Date();
+      const baseRef = sanitize((document.getElementById("pratica")?.value?.trim()
+        || document.getElementById("refTag")?.value?.trim()) || "sopralluogo");
+      const filename = baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      const blob = await zip.generateAsync({type:"blob"});
+      return { blob, filename };
+    }
+
+    async function shareZipPackage(){
+      try{
+        const { blob, filename } = await buildZipPackage();
+        const file = new File([blob], filename, {type:"application/zip"});
+
+        // share sheet con file (solo https o localhost)
+        const isSecure = (window.isSecureContext || location.hostname === "127.0.0.1" || location.hostname === "localhost");
+        const canShareFiles = !!(isSecure && navigator.share && navigator.canShare && navigator.canShare({ files:[file] }));
+
+        if(canShareFiles){
+          await navigator.share({ title: filename, files:[file] });
+          log("🔗 Condivisione avviata.");
+          return;
+        }
+
+        // fallback: scarica
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        alert("Condivisione non disponibile: ZIP scaricato.");
+      }catch(err){
+        alert(err?.message || "Errore condivisione.");
+      }
+    }
+
+document.getElementById("generateZipBtn").addEventListener("click", async ()=>{
+      if(!dataStore.photos.length){ alert("Non ci sono foto da salvare."); return; }
+
+      // prima riallinea i nomi in base allo stato attuale
+      recomputePreviewNames();
+
+      const zip=new JSZip();
+
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      log("Generazione ZIP in corso...");
+      const blob=await zip.generateAsync({type:"blob"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      const now=new Date();
+      const baseRef=sanitize((document.getElementById("praticaId").value.trim()) || (document.getElementById("refTag").value.trim()) || "sopralluogo");
+      a.href=url;
+      a.download= baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      log("ZIP generato: "+a.download);
+    });
+
+    refreshAllSummaries();
+    // Topbar quick actions
+    
+    const tbDraftSave = document.getElementById('tbDraftSave');
+    const tbDraftLoad = document.getElementById('tbDraftLoad');
+    const tbDraftClear = document.getElementById('tbDraftClear');
+
+    tbDraftSave?.addEventListener('click', ()=> saveDraft());
+    tbDraftLoad?.addEventListener('click', ()=> loadDraft());
+    tbDraftClear?.addEventListener('click', ()=> { if(confirm("Pulire bozza e foto offline?")) clearDraftAndPhotos(); });
+
+const tbRefresh = document.getElementById('tbRefresh');
+    const tbShare = document.getElementById('tbShare');
+    
+    const tbEmail = document.getElementById('tbEmail');
+
+const tbSend = document.getElementById('tbSend');
+    const tbReset = document.getElementById('tbReset');
+    const tbExtra = document.getElementById('tbExtra');
+
+    tbRefresh?.addEventListener('click', ()=> document.getElementById('refreshNamesBtn')?.click());
+    tbSend?.addEventListener('click', ()=> document.getElementById('generateZipBtn')?.click());
+    tbEmail?.addEventListener('click', ()=> shareZipByEmail());
+    tbReset?.addEventListener('click', ()=> document.getElementById('resetBtn')?.click());
+    tbExtra?.addEventListener('click', ()=>{
+      // Placeholder: assegna tu cosa deve fare
+      alert('Extra: pulsante libero (da assegnare).');
+    });
+
+// Collapse handlers
+document.addEventListener('click', (e)=>{
+  if(e.target.classList.contains('unitaCollapse')){
+    const unit = e.target.closest('[data-unita-uid]');
+    unit.classList.toggle('collapsed');
+    e.target.textContent = unit.classList.contains('collapsed') ? '▸' : '▾';
+  }
+  if(e.target.classList.contains('localeCollapse')){
+    const card = e.target.closest('[data-locale-uid]');
+    const body = card.querySelector('.localeBody');
+    body.classList.toggle('hidden');
+    e.target.textContent = body.classList.contains('hidden') ? '▸' : '▾';
+  }
+});
+
+  </script>
+</body>
+</html>

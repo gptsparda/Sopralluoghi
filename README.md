@@ -1,2 +1,2 @@
 # Sopralluoghi
-App sopralluoghi 
+App per sopralluoghi: foto + metadati + ZIP + report.
