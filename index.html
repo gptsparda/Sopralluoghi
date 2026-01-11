@@ -2,1482 +2,1391 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>App sopralluoghi</title>
+  <title>App sopralluoghi - ZIP foto + questionario v35</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
-      --fg:#111827;
-      --muted:#6b7280;
-      --border:#e5e7eb;
-      --card:#ffffff;
-
-      --bg-head:#e3edff;
-      --bg-risk:#dff7f2;
-      --bg-unita:#e8f1ff;
-      --bg-summary:#f0f0f0;
-      --bg-notes:#fff7ed;
+      --c-text:#111827;
+      --c-muted:#6b7280;
+      --c-border:#e5e7eb;
+      --c-card:#ffffff;
+      --c-bg:#f5f5f5;
+      --bg-head:#eef2ff;
+      --bg-risk:#ecfeff;
+      --bg-unita:#ecfdf5;
+      --bg-summary:#fff7ed;
+      --bg-notes:#fdf2f8;
       --bg-actions:#f1f5f9;
+      --bg-log:#111827;
+    }
 
-      --btn:#111827;
-      --btn2:#374151;
-      --danger:#b91c1c;
-      --ok:#047857;
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;padding:.8rem;background:var(--c-bg);color:var(--c-text);}
+    h1{font-size:1.12rem;margin:0 0 .55rem 0;}
+
+    .card{background:var(--c-card);border-radius:12px;padding:.65rem .8rem;margin-bottom:.7rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.02);}
+    .card.head{background:var(--bg-head);}
+    .card.risk{background:var(--bg-risk);}
+    .card.unita{background:var(--bg-unita);}
+    .card.summary{background:var(--bg-summary);}
+    .card.notes{background:var(--bg-notes);}
+    .card.actions{background:var(--bg-actions);}
+    .card.log{background:#0b1220;color:#e5e7eb;}
+
+    .titleRow{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+    .titleRow strong{font-size:.95rem}
+    .icon{font-size:1.02rem}
+
+    label{display:block;font-size:.78rem;margin-top:.35rem;margin-bottom:.12rem;}
+    input[type="text"],input[type="number"],select,textarea,button{
+      width:100%;box-sizing:border-box;font-size:.88rem;margin-bottom:.28rem;padding:.35rem .45rem;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
-      color:var(--fg);
-      background:#fafafa;
-      padding:12px 12px 84px;
+    textarea{min-height:70px;resize:vertical;}
+
+    button{border-radius:10px;border:1px solid rgba(0,0,0,.08);cursor:pointer;background:#fff;}
+    button.primary{background:#2563eb;color:#fff;border-color:#1d4ed8;}
+    button.secondary{background:#e5e7eb;color:#111827;border-color:#d1d5db;}
+    button.danger{background:#fee2e2;color:#991b1b;border-color:#fecaca;}
+    .btn-small{width:auto;padding:.28rem .45rem;font-size:.82rem;border-radius:10px;display:inline-flex;align-items:center;gap:.35rem;}
+
+    .row{display:flex;flex-wrap:wrap;gap:.55rem;}
+    .row>div{flex:1 1 45%;}
+    @media(max-width:600px){.row>div{flex-basis:100%;}}
+
+    small{color:var(--c-muted);font-size:.74rem;font-style:italic;}
+    hr{border:none;border-top:1px solid var(--c-border);margin:.65rem 0;}
+
+    .box{border:1px solid var(--c-border);border-radius:12px;padding:.6rem;background:rgba(255,255,255,.7);margin-top:.55rem;}
+    .pill{display:inline-block;background:#f3f4f6;border:1px solid var(--c-border);border-radius:999px;padding:.12rem .5rem;font-size:.72rem;color:#374151;}
+    .chk-grid{display:flex;flex-wrap:wrap;gap:.25rem .8rem;}
+    .chk-grid label{margin:0;display:flex;align-items:center;gap:.32rem;font-size:.86rem;}
+
+    .inline{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;margin:.1rem 0 .25rem 0;}
+    .muted{color:var(--c-muted);}
+
+    /* File buttons */
+    input[type="file"]{display:none;}
+    .fileRow{display:flex;gap:.45rem;flex-wrap:wrap;margin:.3rem 0 .2rem 0;}
+    .fileRow .fileBtn{
+      display:flex;align-items:center;justify-content:center;gap:.32rem;
+      padding:.26rem .44rem;border-radius:10px;border:1px solid rgba(0,0,0,.12);
+      background:#fff;cursor:pointer;font-size:.82rem;min-width:112px;
+      user-select:none;
     }
-    h1{
-      margin:6px 0 12px;
-      font-size:1.25rem;
-      letter-spacing:.02em;
-    }
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      margin:10px 0;
-      box-shadow:0 1px 0 rgba(0,0,0,.03);
-    }
-    .head{background:var(--bg-head)}
-    .risk{background:var(--bg-risk)}
-    .unita{background:var(--bg-unita)}
-    .summary{background:var(--bg-summary)}
-    .notes{background:var(--bg-notes)}
-    .actions{background:var(--bg-actions)}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .row.nowrap{flex-wrap:nowrap}
-    .col{flex:1 1 220px}
-    label{display:block;font-weight:700;margin:6px 0 4px}
-    .hint{font-style:italic;color:var(--muted);font-size:.92em;margin:6px 0}
-    input[type="text"], input[type="number"], textarea, select{
-      width:100%;
-      border:1px solid var(--border);
+    .fileRow .fileBtn .bI{font-size:1.0rem;}
+    .fileRow .fileBtn.capture{background:#eff6ff;border-color:#bfdbfe;}
+    .fileRow .fileBtn.upload{background:#f0fdf4;border-color:#bbf7d0;}
+
+    /* Per-section summary */
+    .secSummary{
+      margin-top:.38rem;
+      padding:.45rem .55rem;
+      border:1px dashed rgba(0,0,0,.18);
       border-radius:10px;
-      padding:10px 10px;
-      font-size:14px;
-      background:#fff;
-      color:var(--fg);
-      outline:none;
+      background:rgba(255,255,255,.55);
+      font-size:.80rem;
     }
-    textarea{min-height:76px;resize:vertical}
-    .mini{font-size:.92em;color:var(--muted);font-weight:500}
-    .chip{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border:1px solid var(--border);
-      border-radius:999px;background:#fff;font-size:13px;
+    .secSummary ul{margin:.22rem 0 0 1rem;padding:0;}
+    .secSummary li{margin:.12rem 0;}
+
+    #log{font-size:.74rem;white-space:pre-wrap;max-height:185px;overflow-y:auto;background:var(--bg-log);color:#e5e7eb;padding:.55rem;border-radius:10px;}
+    code{background:#f3f4f6;border:1px solid var(--c-border);border-radius:6px;padding:.05rem .22rem;}
+
+    /* Compact Volumi */
+    .volRow{display:flex;align-items:center;gap:.45rem;flex-wrap:nowrap}
+    .volRow .volDest{flex:1 1 auto;min-width:140px}
+    .volRow .pianiWrap{display:flex;align-items:center;gap:.28rem;flex:0 0 auto}
+    .iconBtn{width:auto;min-width:0;padding:.22rem .38rem;font-size:.82rem;line-height:1;border-radius:10px}
+    .iconBtn.round{border-radius:999px;padding:.18rem .36rem}
+    .volRow .volPiani{width:72px;margin:0;padding:.28rem .35rem;font-size:.86rem;text-align:center}
+    .volRow input[type="text"]{margin:0}
+    .volRow .trashBtn{margin:0}
+    .volLbl{font-size:.72rem;color:var(--c-muted);font-style:italic;margin:.12rem 0 .35rem 0}
+
+  
+    /* Unità compatta:  su una riga */
+    .unitaRow{display:flex;align-items:center;gap:.45rem;flex-wrap:nowrap}
+    .unitaRow .unitaNome{flex:1 1 auto;min-width:140px;margin:0}
+    .pianoWrap{display:flex;align-items:center;gap:.28rem}
+    .pianoWrap .pBtn{padding:.22rem .4rem;border-radius:999px}
+    .pianoWrap .unitaPiano{width:72px;text-align:center;margin:0}
+
+
+    .secActions{display:flex;gap:.3rem}
+    .refreshBtn{padding:.22rem .42rem;border-radius:999px;font-size:.78rem}
+
+
+    /* Finiture + Cantiere su una riga */
+    .row.inline2{display:flex;gap:.6rem;flex-wrap:nowrap}
+    .row.inline2 > div{flex:1 1 50%}
+    .row.inline2 select{margin-bottom:0}
+
+
+    .localeTitleNum{font-weight:700}
+
+    /* Topbar sticky */
+    body{padding-top:72px;}
+    .topbar{
+      position:fixed; top:0; left:0; right:0;
+      z-index:9999;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.9);
+      border-bottom:1px solid var(--c-border);
+      padding: .5rem .7rem;
+      display:flex; align-items:center; justify-content:space-between; gap:.6rem;
     }
-    .opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
-    .opt{display:flex;gap:10px;align-items:center}
-    .opt input{transform:scale(1.05)}
-    .btn{
-      border:0;border-radius:10px;
-      padding:10px 12px;
-      font-size:14px;
-      color:#fff;
-      background:var(--btn);
-      cursor:pointer;
-    }
-    .btn.secondary{background:var(--btn2)}
-    .btn.danger{background:var(--danger)}
-    .btn.ok{background:var(--ok)}
-    .btn.small{padding:8px 10px;font-size:13px;border-radius:10px}
-    .iconbtn{
-      width:38px;height:38px;border-radius:10px;border:1px solid var(--border);
-      background:#fff;display:inline-flex;align-items:center;justify-content:center;
-      cursor:pointer;
-    }
-    .iconbtn.danger{border-color:#fecaca;background:#fff1f2}
-    .iconbtn svg{width:18px;height:18px}
-    .inline{
-      display:flex;gap:8px;align-items:center;flex-wrap:nowrap;
-    }
-    .inline > *{flex:1}
-    .inline .fixed{flex:0 0 auto}
-    .counter{
-      display:flex;gap:6px;align-items:center;justify-content:flex-start;
-    }
-    .counter input{max-width:84px;text-align:center}
-    .counter .btn.small{min-width:40px}
-    .photo-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
-    .photo-list{margin:10px 0 0;padding:0;list-style:none}
-    .photo-list li{
-      display:flex;gap:10px;align-items:center;justify-content:space-between;
-      padding:8px 10px;margin:6px 0;background:#fff;border:1px solid var(--border);
-      border-radius:12px;
-    }
-    .photo-name{font-size:13px;word-break:break-word}
-    .photo-actions{display:flex;gap:6px;align-items:center}
-    .divider{height:1px;background:rgba(0,0,0,.06);margin:10px 0}
-    details>summary{cursor:pointer;font-weight:800}
-    summary::-webkit-details-marker{display:none}
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      font-size:12px;padding:4px 10px;border-radius:999px;
-      background:#fff;border:1px solid var(--border);color:var(--muted);
+    .topbar-title{font-weight:800; letter-spacing:.2px;}
+    .topbar-actions{display:flex; gap:.35rem; flex-wrap:wrap; justify-content:flex-end}
+    .topbar-actions button{padding:.32rem .55rem; border-radius:999px}
+    @media (max-width:420px){
+      body{padding-top:86px;}
+      .topbar{padding:.45rem .55rem}
+      .topbar-title{display:none;}
     }
 
-    /* Bottom bar */
-    .bottombar{
-      position:fixed;
-      left:12px; right:12px; bottom:12px;
-      background:#ffffff;
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:10px;
+
+    /* UNITÀ titles uppercase */
+    .card.unita .titleRow,
+    .card.unita .pill,
+    .card.unita .unitaTitle,
+    .card.unita .unitaDyn,
+    .card.unita .muted {
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+
+    /* Unità header row compact */
+    .unitaRow{display:flex;align-items:center;gap:.5rem}
+    .unitaRow .unitaNome{flex:1 1 auto;margin:0}
+    .unitaRow .pianoWrap{display:flex;align-items:center;gap:.25rem}
+
+
+    /* UNITÀ single-line header */
+    .unitaHeaderRow{
       display:flex;
-      gap:10px;
-      justify-content:space-between;
-      z-index:999;
-      box-shadow:0 8px 22px rgba(0,0,0,.08);
+      align-items:center;
+      gap:.45rem;
+      flex-wrap:nowrap;
     }
-    .bottombar .btn{
-      flex:1;
-      padding:12px 10px;
-      font-weight:700;
-      border-radius:14px;
-      display:flex;align-items:center;justify-content:center;gap:8px;
-      white-space:nowrap;
-    }
-    .toast{
-      position:fixed;left:50%;bottom:92px;transform:translateX(-50%);
-      background:#111827;color:#fff;padding:10px 12px;border-radius:12px;
-      font-size:13px;opacity:0;pointer-events:none;transition:.2s;
-      max-width:min(92vw,520px);
-      text-align:center;
-    }
-    .toast.show{opacity:1}
-    .muted{color:var(--muted)}
-  </style>
+    .unitaHeaderRow .pill{flex:0 0 auto}
+    .unitaHeaderRow .unitaNome{flex:1 1 auto;margin:0}
+    .unitaHeaderRow .pianoWrap{display:flex;align-items:center;gap:.25rem}
+    .unitaHeaderRow .removeUnitaBtn{flex:0 0 auto}
+
+
+/* UNITÀ header all-in-one row */
+.unitaHeaderRow{
+  display:flex;
+  align-items:center;
+  gap:.4rem;
+}
+.unitaHeaderRow .pill{
+  padding:.2rem .45rem;
+  font-weight:700;
+}
+.unitaHeaderRow .unitaNome{
+  flex:1 1 auto;
+  min-width:0;
+}
+.unitaHeaderRow .pianoWrap input{
+  width:3.2rem;
+  text-align:center;
+}
+
+
+/* Collapse buttons */
+.collapseBtn{padding:.2rem .45rem;border-radius:999px;font-size:.8rem}
+.collapsed .collapsible{display:none}
+
+
+/* Numero U.I. control */
+.uiRow{display:flex;align-items:center;gap:.4rem;flex-wrap:nowrap;margin-top:.45rem}
+.uiRow .uiNum{width:84px;text-align:center;margin:0}
+.uiRow .uiBtn{padding:.22rem .45rem;border-radius:999px}
+
+
+/* Section titles: uppercase & larger */
+.sectionTitle,
+.card > h2,
+.card > h3,
+.titleRow,
+.section-header {
+  text-transform: uppercase;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+
+
+/* Titoletti (label) in grassetto */
+label{
+  font-weight:700;
+}
+
+
+/* Gerarchia testi: label > help */
+label{
+  font-weight:700;
+  font-size:0.95rem;
+}
+small, .muted, .help, .hint{
+  font-size:0.75rem;
+  font-weight:400;
+}
+
+
+/* Opzioni selezionabili (radio/checkbox) in grassetto */
+.chk-grid label,
+.radio-group label,
+.options label,
+input[type="checkbox"] + span,
+input[type="radio"] + span{
+  font-weight:700;
+}
+
+
+/* Spaziatura opzioni più compatta */
+.chk-grid{row-gap:.2rem; column-gap:.6rem}
+.chk-grid label{margin:0}
+
+/* Rimuovi grassetto SOLO dalle voci con checkbox */
+.chk-grid input[type="checkbox"] + span{
+  font-weight:400;
+}
+
+/* Mantieni grassetto per radio */
+.radio-group label,
+input[type="radio"] + span{
+  font-weight:700;
+}
+
+
+/* Radio options NON in grassetto */
+.radio-group label,
+input[type="radio"] + span{
+  font-weight:400 !important;
+}
+
+
+/* FORZA testo opzioni NON in grassetto */
+.chk-grid label,
+.chk-grid span,
+.radio-group label,
+.radio-group span{
+  font-weight:400 !important;
+}
+
+/* Mantieni grassetto solo per i titoletti veri */
+label{
+  font-weight:700;
+}
+
+
+/* Bottom bar (ex topbar) */
+.topbar{
+  position:fixed;
+  left:0; right:0; bottom:0; top:auto;
+  z-index:9999;
+  padding:.6rem .6rem;
+  border-top:1px solid rgba(0,0,0,.12);
+  border-bottom:none;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:saturate(180%) blur(10px);
+}
+body{ padding-bottom:86px; } /* spazio per bottom bar */
+
+/* Pulsanti bottom bar: +50% e quadrati */
+.topbar .btn-small{
+  font-size:1.05rem;
+  padding:.75rem .75rem;
+  min-width:56px;
+  min-height:56px;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.topbar .topbar-actions{
+  gap:.45rem;
+}
+
+
+/* Bottom bar più compatta */
+.topbar{
+  padding:.35rem .4rem;
+}
+body{ padding-bottom:64px; }
+
+/* Pulsanti compatti su UNICA riga */
+.topbar .topbar-actions{
+  display:flex;
+  flex-wrap:nowrap;
+  gap:.25rem;
+}
+
+.topbar .btn-small{
+  font-size:.9rem;
+  padding:.45rem .5rem;
+  min-width:44px;
+  min-height:44px;
+  border-radius:10px;
+}
+
+</style>
 </head>
 <body>
 
-  <h1>APP SOPRALLUOGHI</h1>
-
-  <!-- PRATICA / SINISTRO -->
-  <section class="card head" id="praticaCard">
-    <div class="row">
-      <div class="col">
-        <label>PRATICA/SINISTRO</label>
-        <div class="inline">
-          <input id="praticaId" type="text" placeholder="Es. 2025-AC-00423" />
-          <button class="btn small secondary fixed" type="button" onclick="pasteTo('praticaId')">📋 Incolla</button>
-        </div>
-      </div>
-      <div class="col">
-        <label>ASSICURATO</label>
-        <div class="inline">
-          <input id="assicurato" type="text" placeholder="Es. Rossi Mario" />
-          <button class="btn small secondary fixed" type="button" onclick="pasteTo('assicurato')">📋 Incolla</button>
-        </div>
-      </div>
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title">Sopralluogo</span>
     </div>
-
-    <div class="row">
-      <div class="col">
-        <label>RIFERIMENTO TAG</label>
-        <input id="tagRef" type="text" placeholder="Es. Condominio / Interno 4 / ecc." />
-      </div>
-
-      <div class="col">
-        <label>INDIRIZZO (GPS -> EDITABILE)</label>
-        <div class="inline">
-          <input id="indirizzo" type="text" placeholder="Via ..., n. ..., Comune" />
-          <button class="btn small secondary fixed" type="button" onclick="getLocation()">📍 Posizione</button>
-        </div>
-        <div class="mini muted" id="gpsInfo"></div>
-      </div>
+    <div class="topbar-actions">
+      <button type="button" class="secondary btn-small" id="tbRefresh">🔁 Aggiorna</button>
+      <button type="button" class="primary btn-small" id="tbShare" title="Condividi (genera ZIP)">🔗</button>
+      <button type="button" class="secondary btn-small" id="tbDraftSave">💾 Bozza</button>
+      <button type="button" class="secondary btn-small" id="tbDraftLoad">♻️ Riprendi</button>
+      <button type="button" class="secondary btn-small" id="tbDraftClear">🧹 Pulisci</button>
     </div>
-  </section>
-
-  <!-- PANORAMICA RISCHIO + FOTO -->
-  <section class="card risk" id="riskCard">
-    <details open>
-      <summary>PANORAMICA DEL RISCHIO</summary>
-
-      <div class="divider"></div>
-
-      <label>TIPOLOGIA DI FABBRICATO</label>
-      <div class="opts" id="tipologiaOpts">
-        <label class="opt"><input type="radio" name="tipologia" value="Condominio"> Condominio</label>
-        <label class="opt"><input type="radio" name="tipologia" value="Appartamento"> Appartamento</label>
-        <label class="opt"><input type="radio" name="tipologia" value="Villa"> Villa</label>
-        <label class="opt"><input type="radio" name="tipologia" value="Uffici"> Uffici</label>
-        <label class="opt"><input type="radio" name="tipologia" value="Capannone industriale"> Capannone industriale</label>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label class="mini">ALTRO (LIBERO)</label>
-          <input id="tipologiaAltro" type="text" placeholder="Es. Negozio / Laboratorio / ecc." />
-        </div>
-        <div class="col">
-          <label>NUMERO U.I.</label>
-          <div class="counter">
-            <button class="btn small secondary" type="button" onclick="stepNumber('numUI',-1)">-</button>
-            <input id="numUI" type="number" value="0" />
-            <button class="btn small secondary" type="button" onclick="stepNumber('numUI',1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="row">
-        <div class="col">
-          <label>DESTINAZIONE (1)</label>
-          <input id="dest1" type="text" value="Residenziale" />
-        </div>
-        <div class="col">
-          <label>N. PIANI (1)</label>
-          <div class="counter">
-            <button class="btn small secondary" type="button" onclick="stepNumber('piani1',-1)">-</button>
-            <input id="piani1" type="number" value="0" />
-            <button class="btn small secondary" type="button" onclick="stepNumber('piani1',1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label>DESTINAZIONE (2)</label>
-          <input id="dest2" type="text" value="Interrato e pertinenze" />
-        </div>
-        <div class="col">
-          <label>N. PIANI (2)</label>
-          <div class="counter">
-            <button class="btn small secondary" type="button" onclick="stepNumber('piani2',-1)">-</button>
-            <input id="piani2" type="number" value="0" />
-            <button class="btn small secondary" type="button" onclick="stepNumber('piani2',1)">+</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="hint">*I campi non sono vincolanti. Se non li compili, non blocca nulla.*</div>
-
-      <div class="divider"></div>
-
-      <label>CARATTERISTICHE COSTRUTTIVE (SELEZIONE MULTIPLA)</label>
-      <div class="opts" id="costrOpts">
-        <label class="opt"><input type="checkbox" value="Struttura verticale"> Struttura verticale</label>
-        <label class="opt"><input type="checkbox" value="Struttura orizzontale"> Struttura orizzontale</label>
-        <label class="opt"><input type="checkbox" value="Facciate"> Facciate</label>
-        <label class="opt"><input type="checkbox" value="Copertura"> Copertura</label>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <label>FINITURE</label>
-          <select id="finiture">
-            <option value="">-</option>
-            <option>Scarse</option>
-            <option>Medie</option>
-            <option>Alte</option>
-          </select>
-        </div>
-        <div class="col">
-          <label>CANTIERE</label>
-          <select id="cantiere">
-            <option value="">-</option>
-            <option>Normale</option>
-            <option>Penalizzante</option>
-          </select>
-        </div>
-        <div class="col">
-          <label class="opt" style="font-weight:700;display:flex;gap:10px;align-items:center;margin-top:22px">
-            <input id="ascensore" type="checkbox"> Ascensore
-          </label>
-        </div>
-        <div class="col">
-          <label class="opt" style="font-weight:700;display:flex;gap:10px;align-items:center;margin-top:22px">
-            <input id="fv" type="checkbox"> Pannelli FV
-          </label>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <label>FOTO PANORAMICA</label>
-      <div class="photo-tools">
-        <button class="btn small secondary" type="button" onclick="capturePanoramica()">📷 Scatta</button>
-        <button class="btn small secondary" type="button" onclick="pickPanoramica()">🖼 Carica</button>
-        <button class="btn small danger" type="button" onclick="clearPhotosBySection('PANORAMICA')">🗑 Elimina</button>
-      </div>
-      <ul class="photo-list" id="panoramicaList"></ul>
-    </details>
-  </section>
-
-  <!-- UNITA -->
-  <section class="card unita" id="unitaCard">
-    <details open>
-      <summary>UNITA</summary>
-      <div class="hint">*Ogni UNITA è definita da PIANO + NOME. Dentro puoi aggiungere uno o più LOCALI.*</div>
-      <div id="unitaContainer"></div>
-
-      <div style="margin-top:10px">
-        <button class="btn ok" type="button" onclick="addUnita()">+ AGGIUNGI UNITA</button>
-      </div>
-    </details>
-  </section>
-
-  <!-- RIEPILOGO -->
-  <section class="card summary" id="summaryCard">
-    <details open>
-      <summary>RIEPILOGO FOTO</summary>
-      <div class="hint">*Elenco di tutte le foto caricate (panoramica + unità/locali).*</div>
-      <ul class="photo-list" id="allPhotosList"></ul>
-    </details>
-  </section>
-
-  <div class="toast" id="toast"></div>
-
-  <div class="bottombar">
-    <button class="btn secondary" type="button" onclick="refreshUI()">AGGIORNA</button>
-    <button class="btn ok" type="button" onclick="shareZip()">CONDIVIDI</button>
-    <button class="btn secondary" type="button" onclick="saveDraft()">SALVA</button>
-    <button class="btn secondary" type="button" onclick="loadDraft()">RIPRENDI</button>
-    <button class="btn danger" type="button" onclick="deleteDraft()">ELIMINA</button>
   </div>
 
-<script>
-/* ============================
-   SOPRALLUOGHI - ZIP + REPORT
-   Report nel ZIP:
-   - report.json (tutti i campi e selezioni)
-   - report.txt  (testo leggibile)
-   Foto nel ZIP: /FOTO/*
-   ============================ */
+  <h1>App sopralluoghi - base v33</h1>
 
-  const DB_NAME = "sopralluoghi_offline";
-  const DB_STORE = "draft";
-  const DB_VER = 1;
+  <div class="card head">
+    <div class="titleRow">
+      <strong><span class="icon">📌</span> PRATICA / SINISTRO</strong>
+    </div>
+    <div class="row">
+      <div>
+        <label for="praticaId">Pratica</label>
+        <input type="text" id="praticaId" placeholder="Es. 2025-AC-00423" />
+      </div>
+      <div>
+        <label for="assicurato">Assicurato</label>
+        <input type="text" id="assicurato" placeholder="Es. Rossi Mario / Condominio ..." />
+      </div>
+    </div>
+    <label for="refTag">Riferimento tag</label>
+    <input type="text" id="refTag" placeholder="Es. TAG-CRM / codice interno" />
+    <div class="row" style="align-items:flex-end;">
+      <div style="flex:1 1 70%;">
+        <label for="indirizzo">Indirizzo (GPS -> editabile)</label>
+        <input type="text" id="indirizzo" placeholder="Es. Via ..., n. ..., Comune" />
+        <small>Se GPS disponibile, precompila con coordinate.</small>
+      </div>
+      <div style="flex:1 1 30%;">
+        <button type="button" class="secondary btn-small" id="gpsBtn">📍 Rileva posizione</button>
+      </div>
+    </div>
 
-  let panoPickInput, panoCapInput;
-  let state = {
-    version: "v36r",
-    createdAt: new Date().toISOString(),
-    pratica: "",
-    assicurato: "",
-    tagRef: "",
-    indirizzo: "",
-    gps: null,
-    tipologia: "",
-    tipologiaAltro: "",
-    numUI: 0,
-    volumi: [
-      { destinazione: "Residenziale", piani: 0 },
-      { destinazione: "Interrato e pertinenze", piani: 0 }
-    ],
-    costruttive: [],
-    finiture: "",
-    cantiere: "",
-    ascensore: false,
-    fv: false,
-    unita: [],
-    photos: [] // {id, section, fileName, originalName, mime, size, createdAt, meta:{...}, dataUrl}
-  };
+    <small>Apri la pagina con <code>?ref=...</code> per compilare automaticamente Pratica.</small>
+  </div>
 
-  const defaultLocali = ["Bagno","Cucina","Camera","Soggiorno","Corridoio","Ingresso","Balcone","Terrazzo","Tetto","Facciata","Altro"];
-  const defaultDanni = ["Danni AC","RRG","Cristallo","Guasti ladri","Altro"];
+  <div class="card risk">
+    <div class="titleRow">
+      <strong><span class="icon">🏢</span> Panoramica del rischio</strong>
+    </div>
 
-  function uid(){
-    return Math.random().toString(16).slice(2)+Date.now().toString(16);
-  }
-  function toast(msg){
-    const t=document.getElementById("toast");
-    t.textContent=msg;
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 2200);
-  }
+    <label>Tipologia fabbricato</label>
+    <div class="chk-grid">
+      <label><input type="radio" name="tipologia" value="Condominio" /> Condominio</label>
+      <label><input type="radio" name="tipologia" value="Appartamento" /> Appartamento</label>
+      <label><input type="radio" name="tipologia" value="Villa" /> Villa</label>
+      <label><input type="radio" name="tipologia" value="Uffici" /> Uffici</label>
+      <label><input type="radio" name="tipologia" value="Capannone industriale" /> Capannone industriale</label>
+    </div>
+    <label for="tipologiaAltro">Altro (testo libero)</label>
+    <input type="text" id="tipologiaAltro" placeholder="Es. negozio, laboratorio, scuola..." />
 
-  function sanitize(s){ return (s||"").toString().replace(/[^a-zA-Z0-9_\-]/g,"_"); }
+    
+    <div class="row uiRow">
+      <div style="flex:1 1 auto;">
+        <label for="uiCount">Numero U.I.</label>
+        <small><i>Campo informativo (non vincolante).</i></small>
+      </div>
+      <button type="button" class="secondary btn-small uiBtn" id="uiMinus">-</button>
+      <input type="number" id="uiCount" class="uiNum" value="1" min="0" step="1" />
+      <button type="button" class="secondary btn-small uiBtn" id="uiPlus">+</button>
+    </div>
+<hr />
 
-  function clipPart(s,maxLen){
-    const t=(s||"").toString().trim();
-    if(!t) return "";
-    const clean=sanitize(t);
-    return clean.length>maxLen ? clean.slice(0,maxLen) : clean;
-  }
+    <strong><span class="icon">🧱</span> Volumi</strong>
+    <small>Solo Destinazione e N. piani. Default: 2 blocchi (2° = Interrato e pertinenze, -1).</small>
+    <div id="volumiContainer"></div>
+    <div class="inline" style="margin-top:.45rem;">
+      <button type="button" class="secondary btn-small" id="addVolumeBtn">+ Aggiungi volume</button>
+    </div>
 
-  function getZipBaseName(){
-    const pratica = clipPart((document.getElementById("praticaId")||{}).value, 30);
-    const assicurato = clipPart((document.getElementById("assicurato")||{}).value, 30);
-    const parts = ["sopralluogo"].concat([pratica, assicurato].filter(Boolean));
-    return parts.join("_");
-  }
+    <hr />
 
-  async function pasteTo(id){
-    const el=document.getElementById(id);
-    if(!el) return;
-    try{
-      const txt = (await navigator.clipboard.readText()) || "";
-      if(txt){
-        el.value = txt.trim();
-        syncFromUI();
-        toast("Incollato");
-      } else {
-        toast("Clipboard vuota");
-      }
-    }catch(e){
-      const val = prompt("Incolla qui:");
-      if(val!=null){
-        el.value = val.trim();
-        syncFromUI();
-        toast("Incollato");
-      }
+    <strong><span class="icon">🏗️</span> Caratteristiche costruttive</strong>
+    <small>Selezione multipla + campo note libero.</small>
+
+    <label>Struttura verticale</label>
+    <div class="chk-grid" id="svMulti">
+      <label><input type="checkbox" value="Cemento armato" checked /> Cemento armato</label>
+      <label><input type="checkbox" value="Muratura" /> Muratura</label>
+      <label><input type="checkbox" value="Mista" /> Mista</label>
+    </div>
+    <input type="text" id="svAltro" placeholder="Note libere" value="" />
+
+    <label>Struttura orizzontale</label>
+    <div class="chk-grid" id="soMulti">
+      <label><input type="checkbox" value="Laterocemento" checked /> Laterocemento</label>
+      <label><input type="checkbox" value="Legno" /> Legno</label>
+      <label><input type="checkbox" value="Acciaio" /> Acciaio</label>
+    </div>
+    <input type="text" id="soAltro" placeholder="Note libere" value="" />
+
+    <label>Facciate</label>
+    <div class="chk-grid" id="facMulti">
+      <label><input type="checkbox" value="Intonaco" checked /> Intonaco</label>
+      <label><input type="checkbox" value="Rivestimento" /> Rivestimento</label>
+      <label><input type="checkbox" value="Cappotto" /> Cappotto</label>
+    </div>
+    <input type="text" id="facAltro" placeholder="Note libere" value="" />
+
+    <label>Copertura</label>
+    <div class="chk-grid" id="copMulti">
+      <label><input type="checkbox" value="A falde (coppi/tegole)" checked /> A falde (coppi/tegole)</label>
+      <label><input type="checkbox" value="Piana (guaina)" /> Piana (guaina)</label>
+      <label><input type="checkbox" value="Lamiera/pannelli" /> Lamiera/pannelli</label>
+    </div>
+    <input type="text" id="copAltro" placeholder="Note libere" value="" />
+
+    <div class="row inline2">
+      <div>
+        <label for="finiture">Finiture</label>
+        <select id="finiture">
+          <option value="">- n/d -</option>
+          <option value="scarse">Scarse</option>
+          <option value="medie" selected>Medie</option>
+          <option value="alte">Alte</option>
+        </select>
+      </div>
+      <div>
+        <label for="cantiere">Cantiere</label>
+        <select id="cantiere">
+          <option value="">- n/d -</option>
+          <option value="normale" selected>Normale</option>
+          <option value="penalizzante">Penalizzante</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="inline">
+        <input type="checkbox" id="ascensore" />
+        <label for="ascensore" style="margin:0;">Ascensore</label>
+      </div>
+      <div class="inline">
+        <input type="checkbox" id="pannelliFV" />
+        <label for="pannelliFV" style="margin:0;">Pannelli FV</label>
+      </div>
+    </div>
+<hr />
+
+    <strong><span class="icon">🖼️</span> Foto panoramica del rischio</strong>
+    <small>Salvate in cartella unica <b>FOTO</b> con nome <code>-PANORAMICA-###</code>.</small>
+
+    <div class="fileRow">
+      <label class="fileBtn capture" for="photoRiskCapture"><span class="bI">📷</span> Scatta</label>
+      <input type="file" id="photoRiskCapture" accept="image/*" capture="environment" multiple />
+
+      <label class="fileBtn upload" for="photoRiskUpload"><span class="bI">🖼️</span> Carica</label>
+      <input type="file" id="photoRiskUpload" accept="image/*" multiple />
+    </div>
+
+    <div class="secSummary" id="secSum_pan">
+      <div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span></div>
+      <div class="muted">Nessuna foto.</div>
+    </div>
+  </div>
+
+  <div class="card unita">
+    <div class="titleRow">
+      <strong><span class="icon">🏠</span> UNITA</strong>
+    </div>
+    <small>Sezione definita da <b></b>. Dentro aggiungi i Locali. Ogni locale ha foto Scatta/Carica e riepilogo sezione.</small>
+    <div id="unitaContainer"></div>
+    <div class="inline" style="justify-content:flex-end;margin-top:.5rem;">
+      <button type="button" class="secondary btn-small" id="addUnitaBtn">+ Aggiungi unita</button>
+    </div>
+  </div>
+
+  <div class="card summary">
+    <div class="titleRow">
+      <strong><span class="icon">🧾</span> Riepilogo finale foto</strong>
+      <button type="button" class="secondary btn-small" id="refreshNamesBtn">🔁 Aggiorna nomi foto</button>
+    </div>
+    <small>Se modifichi Nome/Piano/Locale/Danno, usa “Aggiorna nomi foto” per riallineare l'elenco (rinomina logica, non il file sul telefono).</small>
+    <div class="secSummary" id="finalList">
+      <div class="muted">Nessuna foto.</div>
+    </div>
+  </div>
+
+  <div class="card notes">
+    <div class="titleRow">
+      <strong><span class="icon">📝</span> Note generali</strong>
+    </div>
+    <textarea id="noteGenerali" placeholder="Es. accesso regolare, presenti amministratore e inquilino..."></textarea>
+  </div>
+
+  <div class="card actions">
+    <div class="titleRow">
+      <strong><span class="icon">📦</span> Output</strong>
+    </div>
+    <div class="row">
+      <div><button class="primary" type="button" id="generateZipBtn">Genera ZIP sopralluogo</button></div>
+      <div><button class="secondary" type="button" id="resetBtn">Svuota dati</button></div>
+    </div>
+    <small>ZIP contiene: cartella <b>FOTO</b> + report TXT + report JSON.</small>
+  </div>
+
+  <div class="card log">
+    <div class="titleRow">
+      <strong><span class="icon">🧪</span> Log</strong>
+    </div>
+    <pre id="log"></pre>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script>
+    
+    // --- IndexedDB (bozza offline: dati + foto)
+    const IDB_NAME = "sopralluoghi_offline";
+    const IDB_VER = 1;
+    const IDB_STORE_PHOTOS = "photos";
+    const IDB_STORE_DRAFT = "draft";
+
+    function uid(){
+      if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8);
     }
-  }
 
-  function stepNumber(id,delta){
-    const el=document.getElementById(id);
-    if(!el) return;
-    const cur = parseInt(el.value||"0",10);
-    el.value = (isNaN(cur)?0:cur) + delta;
-    syncFromUI();
-  }
-
-  function getRadio(name){
-    const sel=document.querySelector(`input[name="${name}"]:checked`);
-    return sel ? sel.value : "";
-  }
-  function getChecks(containerId){
-    const wrap=document.getElementById(containerId);
-    if(!wrap) return [];
-    return [...wrap.querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value);
-  }
-
-  function syncFromUI(){
-    state.pratica = (document.getElementById("praticaId")||{}).value || "";
-    state.assicurato = (document.getElementById("assicurato")||{}).value || "";
-    state.tagRef = (document.getElementById("tagRef")||{}).value || "";
-    state.indirizzo = (document.getElementById("indirizzo")||{}).value || "";
-    state.tipologia = getRadio("tipologia");
-    state.tipologiaAltro = (document.getElementById("tipologiaAltro")||{}).value || "";
-    state.numUI = parseInt((document.getElementById("numUI")||{}).value || "0",10) || 0;
-
-    state.volumi[0].destinazione = (document.getElementById("dest1")||{}).value || "";
-    state.volumi[0].piani = parseInt((document.getElementById("piani1")||{}).value || "0",10) || 0;
-    state.volumi[1].destinazione = (document.getElementById("dest2")||{}).value || "";
-    state.volumi[1].piani = parseInt((document.getElementById("piani2")||{}).value || "0",10) || 0;
-
-    state.costruttive = getChecks("costrOpts");
-    state.finiture = (document.getElementById("finiture")||{}).value || "";
-    state.cantiere = (document.getElementById("cantiere")||{}).value || "";
-    state.ascensore = !!(document.getElementById("ascensore")||{}).checked;
-    state.fv = !!(document.getElementById("fv")||{}).checked;
-
-    renderAllPhotosList();
-  }
-
-  function refreshUI(){
-    syncFromUI();
-    renderAllPhotosList();
-    toast("Aggiornato");
-  }
-
-  /* ======== GPS ======== */
-  function getLocation(){
-    if(!navigator.geolocation){
-      toast("GPS non disponibile");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition((pos)=>{
-      const {latitude, longitude, accuracy} = pos.coords;
-      state.gps = {latitude, longitude, accuracy, ts:new Date().toISOString()};
-      const indir=document.getElementById("indirizzo");
-      if(indir && !indir.value.trim()){
-        indir.value = `GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-      }
-      const info=document.getElementById("gpsInfo");
-      if(info){
-        info.textContent = `Coordinate: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} (±${Math.round(accuracy)}m)`;
-      }
-      syncFromUI();
-      toast("Posizione rilevata");
-    }, ()=>{
-      toast("Impossibile rilevare posizione");
-    }, {enableHighAccuracy:true, timeout:8000});
-  }
-
-  /* ======== PANORAMICA FOTO ======== */
-  function ensurePanoInputs(){
-    if(!panoPickInput){
-      panoPickInput=document.createElement("input");
-      panoPickInput.type="file";
-      panoPickInput.accept="image/*";
-      panoPickInput.multiple=true;
-      panoPickInput.addEventListener("change", async (e)=>{
-        const files=[...e.target.files||[]];
-        if(files.length) await addFilesToSection("PANORAMICA", files, {kind:"pick"});
-        panoPickInput.value="";
+    function openDB(){
+      return new Promise((resolve, reject)=>{
+        const req = indexedDB.open(IDB_NAME, IDB_VER);
+        req.onupgradeneeded = (e)=>{
+          const db = req.result;
+          if(!db.objectStoreNames.contains(IDB_STORE_PHOTOS)){
+            const s = db.createObjectStore(IDB_STORE_PHOTOS, { keyPath: "id" });
+            s.createIndex("createdAt", "createdAt", { unique:false });
+          }
+          if(!db.objectStoreNames.contains(IDB_STORE_DRAFT)){
+            db.createObjectStore(IDB_STORE_DRAFT, { keyPath: "key" });
+          }
+        };
+        req.onsuccess = ()=> resolve(req.result);
+        req.onerror = ()=> reject(req.error);
       });
     }
-    if(!panoCapInput){
-      panoCapInput=document.createElement("input");
-      panoCapInput.type="file";
-      panoCapInput.accept="image/*";
-      panoCapInput.capture="environment";
-      panoCapInput.multiple=true;
-      panoCapInput.addEventListener("change", async (e)=>{
-        const files=[...e.target.files||[]];
-        if(files.length) await addFilesToSection("PANORAMICA", files, {kind:"capture"});
-        panoCapInput.value="";
+
+    async function idbPut(storeName, value){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readwrite");
+        tx.oncomplete = ()=>{ db.close(); resolve(true); };
+        tx.onerror = ()=>{ db.close(); reject(tx.error); };
+        tx.objectStore(storeName).put(value);
       });
     }
-  }
-  function pickPanoramica(){ ensurePanoInputs(); panoPickInput.click(); }
-  function capturePanoramica(){ ensurePanoInputs(); panoCapInput.click(); }
 
-  function clearPhotosBySection(section){
-    const before=state.photos.length;
-    state.photos = state.photos.filter(p=>p.section!==section);
-    if(before!==state.photos.length){
-      renderSectionPhotoList(section);
-      renderAllPhotosList();
-      saveDraftSilent();
-      toast("Foto eliminate");
-    }
-  }
-
-  function renderSectionPhotoList(section){
-    const ul = (section==="PANORAMICA") ? document.getElementById("panoramicaList") : document.getElementById(section);
-    if(!ul) return;
-
-    const list = state.photos.filter(p=>p.section===section);
-    ul.innerHTML="";
-    list.forEach((p,idx)=>{
-      const li=document.createElement("li");
-      const left=document.createElement("div");
-      left.className="photo-name";
-      left.textContent = p.fileName;
-      const actions=document.createElement("div");
-      actions.className="photo-actions";
-
-      const del=document.createElement("button");
-      del.className="iconbtn danger";
-      del.type="button";
-      del.title="Elimina";
-      del.innerHTML = trashSvg();
-      del.onclick=()=>{
-        state.photos = state.photos.filter(x=>x.id!==p.id);
-        renderSectionPhotoList(section);
-        renderAllPhotosList();
-        saveDraftSilent();
-      };
-
-      actions.appendChild(del);
-      li.appendChild(left);
-      li.appendChild(actions);
-      ul.appendChild(li);
-    });
-  }
-
-  function renderAllPhotosList(){
-    const ul=document.getElementById("allPhotosList");
-    if(!ul) return;
-    ul.innerHTML="";
-    if(state.photos.length===0){
-      const li=document.createElement("li");
-      li.style.padding="10px";
-      li.className="muted";
-      li.textContent="Nessuna foto caricata";
-      ul.appendChild(li);
-      return;
-    }
-    state.photos.forEach(p=>{
-      const li=document.createElement("li");
-      const left=document.createElement("div");
-      left.className="photo-name";
-      left.textContent = `${p.fileName} `;
-      const right=document.createElement("span");
-      right.className="badge";
-      right.textContent = p.section;
-      li.appendChild(left);
-      li.appendChild(right);
-      ul.appendChild(li);
-    });
-  }
-
-  /* ======== UNITA + LOCALI ======== */
-  function addUnita(){
-    const u = {
-      id: uid(),
-      nome: "",
-      piano: 0,
-      locali: []
-    };
-    state.unita.push(u);
-    renderUnita();
-    saveDraftSilent();
-  }
-
-  function removeUnita(unitaId){
-    state.unita = state.unita.filter(u=>u.id!==unitaId);
-    // rimuovi anche foto collegate
-    state.photos = state.photos.filter(p=>!p.section.startsWith(`U_${unitaId}_`));
-    renderUnita();
-    renderAllPhotosList();
-    saveDraftSilent();
-  }
-
-  function addLocale(unitaId){
-    const u = state.unita.find(x=>x.id===unitaId);
-    if(!u) return;
-    const l = {
-      id: uid(),
-      nome: "",
-      localeSel: "",
-      localeAltro: "",
-      danniSel: [],
-      note: ""
-    };
-    u.locali.push(l);
-    renderUnita();
-    saveDraftSilent();
-  }
-
-  function removeLocale(unitaId, localeId){
-    const u=state.unita.find(x=>x.id===unitaId);
-    if(!u) return;
-    u.locali = u.locali.filter(l=>l.id!==localeId);
-    // rimuovi foto collegate a quel locale
-    state.photos = state.photos.filter(p=>p.section!==photoSectionFor(unitaId, localeId));
-    renderUnita();
-    renderAllPhotosList();
-    saveDraftSilent();
-  }
-
-  function photoSectionFor(unitaId, localeId){
-    return `U_${unitaId}_L_${localeId}`;
-  }
-
-  function buildPhotoFileName(meta, idx){
-    // Formato: -PIANO NOME LOCALE DANNO - NR
-    const piano = clipPart(meta.piano, 8);
-    const nome = clipPart(meta.nome, 20);
-    const locale = clipPart(meta.locale, 18);
-    const danno = clipPart(meta.danno, 18);
-    const n = String(idx).padStart(2,"0");
-    const parts = ["-"+[piano,nome,locale,danno].filter(Boolean).join(" ")].join("");
-    return `${parts} - ${n}.jpg`.replace(/\s+/g," ").trim();
-  }
-
-  async function addFilesToSection(section, files, meta){
-    // meta: {kind, ...}
-    for(const f of files){
-      const dataUrl = await fileToDataUrl(f);
-      const p = {
-        id: uid(),
-        section,
-        originalName: f.name,
-        mime: f.type || "image/jpeg",
-        size: f.size || 0,
-        createdAt: new Date().toISOString(),
-        meta: meta || {},
-        fileName: (section==="PANORAMICA")
-          ? `-PANORAMICA - ${String(nextIndexForSection(section)).padStart(2,"0")}.jpg`
-          : `-${section} - ${String(nextIndexForSection(section)).padStart(2,"0")}.jpg`,
-        dataUrl
-      };
-      state.photos.push(p);
-    }
-    renderSectionPhotoList(section);
-    renderAllPhotosList();
-    saveDraftSilent();
-    toast("Foto aggiunte");
-  }
-
-  function nextIndexForSection(section){
-    return state.photos.filter(p=>p.section===section).length + 1;
-  }
-
-  function fileToDataUrl(file){
-    return new Promise((resolve,reject)=>{
-      const r=new FileReader();
-      r.onload=()=>resolve(r.result);
-      r.onerror=reject;
-      r.readAsDataURL(file);
-    });
-  }
-
-  function renderUnita(){
-    const wrap=document.getElementById("unitaContainer");
-    if(!wrap) return;
-    wrap.innerHTML="";
-
-    if(state.unita.length===0){
-      const p=document.createElement("div");
-      p.className="muted";
-      p.textContent="Nessuna unità inserita";
-      wrap.appendChild(p);
-      return;
-    }
-
-    state.unita.forEach((u,uiIdx)=>{
-      const card=document.createElement("div");
-      card.className="card";
-      card.style.background="#fff";
-
-      // header riga unica
-      const hdr=document.createElement("div");
-      hdr.className="row nowrap";
-      hdr.style.justifyContent="space-between";
-
-      const left=document.createElement("div");
-      left.className="row nowrap";
-      left.style.flex="1";
-      left.style.gap="8px";
-      left.style.alignItems="center";
-
-      const btnDel=document.createElement("button");
-      btnDel.className="iconbtn danger";
-      btnDel.type="button";
-      btnDel.title="Elimina unità";
-      btnDel.innerHTML=trashSvg();
-      btnDel.onclick=()=>removeUnita(u.id);
-
-      const nameInp=document.createElement("input");
-      nameInp.type="text";
-      nameInp.placeholder="Nome (es. Rossi)";
-      nameInp.value=u.nome||"";
-      nameInp.oninput=()=>{
-        u.nome=nameInp.value;
-        syncFromUI();
-        // rinomina foto dei locali collegati (se meta disponibile)
-        autoRenameUnitPhotos(u.id);
-        saveDraftSilent();
-        renderUnita(); // aggiornamento titoli
-      };
-
-      const pianoWrap=document.createElement("div");
-      pianoWrap.className="counter";
-      pianoWrap.style.flex="0 0 auto";
-
-      const bMinus=document.createElement("button");
-      bMinus.className="btn small secondary";
-      bMinus.type="button";
-      bMinus.textContent="-";
-      bMinus.onclick=()=>{
-        u.piano=(parseInt(u.piano||0,10)||0)-1;
-        saveDraftSilent();
-        autoRenameUnitPhotos(u.id);
-        renderUnita();
-      };
-
-      const pianoInp=document.createElement("input");
-      pianoInp.type="number";
-      pianoInp.value=u.piano||0;
-      pianoInp.style.maxWidth="70px";
-      pianoInp.oninput=()=>{
-        u.piano=parseInt(pianoInp.value||"0",10)||0;
-        saveDraftSilent();
-        autoRenameUnitPhotos(u.id);
-        renderUnita();
-      };
-
-      const bPlus=document.createElement("button");
-      bPlus.className="btn small secondary";
-      bPlus.type="button";
-      bPlus.textContent="+";
-      bPlus.onclick=()=>{
-        u.piano=(parseInt(u.piano||0,10)||0)+1;
-        saveDraftSilent();
-        autoRenameUnitPhotos(u.id);
-        renderUnita();
-      };
-
-      pianoWrap.appendChild(bMinus);
-      pianoWrap.appendChild(pianoInp);
-      pianoWrap.appendChild(bPlus);
-
-      left.appendChild(btnDel);
-      left.appendChild(tagSpan(`UNITA ${uiIdx+1}`));
-      left.appendChild(nameInp);
-      left.appendChild(tagSpan(`PIANO`));
-      left.appendChild(pianoWrap);
-
-      hdr.appendChild(left);
-      card.appendChild(hdr);
-
-      const titleLine=document.createElement("div");
-      titleLine.className="mini";
-      titleLine.style.margin="6px 0 10px";
-      titleLine.textContent = `Titolo: ${formatUnitaTitle(u, uiIdx)}`;
-      card.appendChild(titleLine);
-
-      // locali
-      const localiWrap=document.createElement("div");
-      localiWrap.style.marginTop="8px";
-
-      if(!u.locali || u.locali.length===0){
-        const m=document.createElement("div");
-        m.className="muted";
-        m.textContent="Nessun locale inserito";
-        localiWrap.appendChild(m);
-      } else {
-        u.locali.forEach((l,liIdx)=>{
-          const det=document.createElement("details");
-          det.open=true;
-
-          const sum=document.createElement("summary");
-          sum.textContent = `LOCALE ${liIdx+1}`;
-          det.appendChild(sum);
-
-          const inner=document.createElement("div");
-          inner.style.marginTop="8px";
-
-          const badge=document.createElement("div");
-          badge.className="badge";
-          badge.textContent = `Unità: ${formatUnitaTitle(u, uiIdx)}`;
-          inner.appendChild(badge);
-
-          const row1=document.createElement("div");
-          row1.className="row";
-          row1.style.marginTop="8px";
-
-          const colLocale=document.createElement("div");
-          colLocale.className="col";
-          const labL=document.createElement("label");
-          labL.textContent="LOCALE";
-          colLocale.appendChild(labL);
-
-          const sel=document.createElement("select");
-          const opt0=document.createElement("option");
-          opt0.value=""; opt0.textContent="-";
-          sel.appendChild(opt0);
-          defaultLocali.forEach(x=>{
-            const o=document.createElement("option");
-            o.value=x; o.textContent=x;
-            sel.appendChild(o);
-          });
-          sel.value=l.localeSel||"";
-          sel.onchange=()=>{
-            l.localeSel=sel.value;
-            autoRenameLocalePhotos(u, l);
-            saveDraftSilent();
-          };
-          colLocale.appendChild(sel);
-
-          const altroInp=document.createElement("input");
-          altroInp.type="text";
-          altroInp.placeholder="Altro locale (libero)";
-          altroInp.value=l.localeAltro||"";
-          altroInp.oninput=()=>{
-            l.localeAltro=altroInp.value;
-            autoRenameLocalePhotos(u, l);
-            saveDraftSilent();
-          };
-          colLocale.appendChild(altroInp);
-
-          const colD=document.createElement("div");
-          colD.className="col";
-          const labD=document.createElement("label");
-          labD.textContent="TIPO DI DANNO";
-          colD.appendChild(labD);
-
-          const danniBox=document.createElement("div");
-          danniBox.className="opts";
-          defaultDanni.forEach(d=>{
-            const wrapOpt=document.createElement("label");
-            wrapOpt.className="opt";
-            const cb=document.createElement("input");
-            cb.type="checkbox";
-            cb.value=d;
-            cb.checked=(l.danniSel||[]).includes(d);
-            cb.onchange=()=>{
-              if(cb.checked){
-                l.danniSel=[...(l.danniSel||[]), d];
-              }else{
-                l.danniSel=(l.danniSel||[]).filter(x=>x!==d);
-              }
-              autoRenameLocalePhotos(u,l);
-              saveDraftSilent();
-            };
-            wrapOpt.appendChild(cb);
-            wrapOpt.appendChild(document.createTextNode(" "+d));
-            danniBox.appendChild(wrapOpt);
-          });
-          colD.appendChild(danniBox);
-
-          const colNote=document.createElement("div");
-          colNote.className="col";
-          const labN=document.createElement("label");
-          labN.textContent="NOTE";
-          colNote.appendChild(labN);
-          const ta=document.createElement("textarea");
-          ta.placeholder="Note libere...";
-          ta.value=l.note||"";
-          ta.oninput=()=>{
-            l.note=ta.value;
-            saveDraftSilent();
-          };
-          colNote.appendChild(ta);
-
-          row1.appendChild(colLocale);
-          row1.appendChild(colD);
-          row1.appendChild(colNote);
-
-          inner.appendChild(row1);
-
-          // foto tools locale
-          const section = photoSectionFor(u.id, l.id);
-          const tools=document.createElement("div");
-          tools.className="photo-tools";
-          tools.style.marginTop="10px";
-
-          const bCap=document.createElement("button");
-          bCap.className="btn small secondary";
-          bCap.type="button";
-          bCap.textContent="📷 Scatta";
-          bCap.onclick=()=>captureForLocale(u, l);
-
-          const bPick=document.createElement("button");
-          bPick.className="btn small secondary";
-          bPick.type="button";
-          bPick.textContent="🖼 Carica";
-          bPick.onclick=()=>pickForLocale(u, l);
-
-          const bDelAll=document.createElement("button");
-          bDelAll.className="btn small danger";
-          bDelAll.type="button";
-          bDelAll.textContent="🗑 Elimina";
-          bDelAll.onclick=()=>clearPhotosBySection(section);
-
-          const bRefresh=document.createElement("button");
-          bRefresh.className="btn small secondary";
-          bRefresh.type="button";
-          bRefresh.textContent="↻ Aggiorna nomi";
-          bRefresh.onclick=()=>{
-            autoRenameLocalePhotos(u,l, true);
-            saveDraftSilent();
-            toast("Nomi aggiornati");
-            renderSectionPhotoList(section);
-            renderAllPhotosList();
-          };
-
-          tools.appendChild(bCap);
-          tools.appendChild(bPick);
-          tools.appendChild(bDelAll);
-          tools.appendChild(bRefresh);
-
-          inner.appendChild(tools);
-
-          // lista foto locale
-          const ul=document.createElement("ul");
-          ul.className="photo-list";
-          ul.id=section;
-          inner.appendChild(ul);
-
-          det.appendChild(inner);
-
-          // elimina locale button
-          const rm=document.createElement("button");
-          rm.className="btn small danger";
-          rm.type="button";
-          rm.style.marginTop="8px";
-          rm.textContent="Elimina locale";
-          rm.onclick=()=>removeLocale(u.id, l.id);
-          det.appendChild(rm);
-
-          localiWrap.appendChild(det);
-
-          // render lista foto sezione
-          setTimeout(()=>renderSectionPhotoList(section),0);
-        });
-      }
-
-      card.appendChild(localiWrap);
-
-      const addBtn=document.createElement("button");
-      addBtn.className="btn ok";
-      addBtn.type="button";
-      addBtn.style.marginTop="10px";
-      addBtn.textContent="+ AGGIUNGI LOCALE";
-      addBtn.onclick=()=>addLocale(u.id);
-      card.appendChild(addBtn);
-
-      wrap.appendChild(card);
-    });
-
-    renderAllPhotosList();
-  }
-
-  function tagSpan(txt){
-    const s=document.createElement("span");
-    s.className="badge";
-    s.textContent=txt;
-    return s;
-  }
-
-  function formatUnitaTitle(u, idx){
-    const nome = (u.nome||"").trim();
-    const piano = (u.piano!=null?String(u.piano):"").trim();
-    const parts=[];
-    if(piano) parts.push(piano+"°");
-    if(nome) parts.push(nome);
-    if(parts.length===0) return `UNITA ${idx+1}`;
-    return parts.join(" ");
-  }
-
-  function localeLabel(l, liIdx){
-    const base = (l.localeSel||"").trim() || (l.localeAltro||"").trim();
-    return base ? `${base}` : `LOCALE ${liIdx+1}`;
-  }
-
-  function getPrimaryDanno(l){
-    const arr=l.danniSel||[];
-    if(arr.length===0) return "";
-    // scegli primo non "Altro" se presente
-    const first=arr.find(x=>x!=="Altro") || arr[0];
-    return first;
-  }
-
-  function autoRenameUnitPhotos(unitaId){
-    const u=state.unita.find(x=>x.id===unitaId);
-    if(!u) return;
-    (u.locali||[]).forEach(l=>{
-      autoRenameLocalePhotos(u,l,false);
-    });
-  }
-
-  function autoRenameLocalePhotos(u,l, force){
-    const section=photoSectionFor(u.id, l.id);
-    const photos=state.photos.filter(p=>p.section===section);
-    if(photos.length===0) return;
-
-    const meta = {
-      piano: String(u.piano||""),
-      nome: (u.nome||"").trim(),
-      locale: (l.localeSel||"").trim() || (l.localeAltro||"").trim(),
-      danno: getPrimaryDanno(l)
-    };
-
-    photos.forEach((p,idx)=>{
-      const newName=buildPhotoFileName(meta, idx+1);
-      if(force || !p.fileName || p.fileName.startsWith("-U_")){
-        p.fileName=newName;
-      } else {
-        // aggiorna comunque (richiesto)
-        p.fileName=newName;
-      }
-      p.meta = {...(p.meta||{}), ...meta};
-    });
-
-    renderSectionPhotoList(section);
-    renderAllPhotosList();
-  }
-
-  function ensureLocaleInputs(obj, kind){
-    if(!obj._pick){
-      obj._pick=document.createElement("input");
-      obj._pick.type="file";
-      obj._pick.accept="image/*";
-      obj._pick.multiple=true;
-      obj._pick.addEventListener("change", async (e)=>{
-        const files=[...e.target.files||[]];
-        if(files.length) await handleLocaleFiles(obj, files, {kind:"pick"});
-        obj._pick.value="";
+    async function idbGetAll(storeName){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = ()=>{ db.close(); resolve(req.result||[]); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
       });
     }
-    if(!obj._cap){
-      obj._cap=document.createElement("input");
-      obj._cap.type="file";
-      obj._cap.accept="image/*";
-      obj._cap.capture="environment";
-      obj._cap.multiple=true;
-      obj._cap.addEventListener("change", async (e)=>{
-        const files=[...e.target.files||[]];
-        if(files.length) await handleLocaleFiles(obj, files, {kind:"capture"});
-        obj._cap.value="";
+
+    async function idbGet(storeName, key){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readonly");
+        const req = tx.objectStore(storeName).get(key);
+        req.onsuccess = ()=>{ db.close(); resolve(req.result||null); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
       });
     }
-  }
 
-  async function handleLocaleFiles(ctx, files, meta){
-    // ctx: {u,l}
-    const u=ctx.u, l=ctx.l;
-    const section=photoSectionFor(u.id, l.id);
-    const beforeCount=state.photos.filter(p=>p.section===section).length;
-
-    for(const f of files){
-      const dataUrl=await fileToDataUrl(f);
-      const p={
-        id:uid(),
-        section,
-        originalName:f.name,
-        mime:f.type||"image/jpeg",
-        size:f.size||0,
-        createdAt:new Date().toISOString(),
-        meta:{...(meta||{})},
-        fileName:"", // viene settato sotto
-        dataUrl
-      };
-      state.photos.push(p);
-    }
-
-    // rinomina in base ai meta attuali locale
-    autoRenameLocalePhotos(u,l,true);
-
-    renderSectionPhotoList(section);
-    renderAllPhotosList();
-    saveDraftSilent();
-    toast("Foto aggiunte");
-  }
-
-  function pickForLocale(u,l){
-    const ctx={u,l};
-    ensureLocaleInputs(ctx);
-    ctx._pick.click();
-  }
-  function captureForLocale(u,l){
-    const ctx={u,l};
-    ensureLocaleInputs(ctx);
-    ctx._cap.click();
-  }
-
-  /* ======== DRAFT OFFLINE (IndexedDB) ======== */
-  function openDB(){
-    return new Promise((resolve,reject)=>{
-      const req=indexedDB.open(DB_NAME, DB_VER);
-      req.onupgradeneeded=()=>{
-        const db=req.result;
-        if(!db.objectStoreNames.contains(DB_STORE)){
-          db.createObjectStore(DB_STORE);
-        }
-      };
-      req.onsuccess=()=>resolve(req.result);
-      req.onerror=()=>reject(req.error);
-    });
-  }
-
-  async function idbSet(key, value){
-    const db=await openDB();
-    return new Promise((resolve,reject)=>{
-      const tx=db.transaction(DB_STORE,"readwrite");
-      tx.objectStore(DB_STORE).put(value, key);
-      tx.oncomplete=()=>resolve();
-      tx.onerror=()=>reject(tx.error);
-    });
-  }
-
-  async function idbGet(key){
-    const db=await openDB();
-    return new Promise((resolve,reject)=>{
-      const tx=db.transaction(DB_STORE,"readonly");
-      const req=tx.objectStore(DB_STORE).get(key);
-      req.onsuccess=()=>resolve(req.result);
-      req.onerror=()=>reject(req.error);
-    });
-  }
-
-  async function idbDel(key){
-    const db=await openDB();
-    return new Promise((resolve,reject)=>{
-      const tx=db.transaction(DB_STORE,"readwrite");
-      tx.objectStore(DB_STORE).delete(key);
-      tx.oncomplete=()=>resolve();
-      tx.onerror=()=>reject(tx.error);
-    });
-  }
-
-  async function saveDraft(){
-    syncFromUI();
-    state.updatedAt = new Date().toISOString();
-    await idbSet("draft", JSON.stringify(state));
-    toast("Bozza salvata");
-  }
-
-  async function saveDraftSilent(){
-    try{
-      syncFromUI();
-      state.updatedAt = new Date().toISOString();
-      await idbSet("draft", JSON.stringify(state));
-    }catch(e){
-      // ignore
-    }
-  }
-
-  async function loadDraft(){
-    try{
-      const raw=await idbGet("draft");
-      if(!raw){ toast("Nessuna bozza"); return; }
-      const obj=JSON.parse(raw);
-      state = obj;
-      applyToUI();
-      renderUnita();
-      renderSectionPhotoList("PANORAMICA");
-      renderAllPhotosList();
-      toast("Bozza ripristinata");
-    }catch(e){
-      toast("Errore ripristino bozza");
-    }
-  }
-
-  async function deleteDraft(){
-    if(!confirm("Eliminare la bozza salvata?")) return;
-    await idbDel("draft");
-    toast("Bozza eliminata");
-  }
-
-  function applyToUI(){
-    (document.getElementById("praticaId")||{}).value = state.pratica||"";
-    (document.getElementById("assicurato")||{}).value = state.assicurato||"";
-    (document.getElementById("tagRef")||{}).value = state.tagRef||"";
-    (document.getElementById("indirizzo")||{}).value = state.indirizzo||"";
-    (document.getElementById("tipologiaAltro")||{}).value = state.tipologiaAltro||"";
-    (document.getElementById("numUI")||{}).value = state.numUI||0;
-
-    // radio tipologia
-    document.querySelectorAll('input[name="tipologia"]').forEach(r=>{
-      r.checked = (r.value === (state.tipologia||""));
-    });
-
-    (document.getElementById("dest1")||{}).value = state.volumi?.[0]?.destinazione ?? "Residenziale";
-    (document.getElementById("piani1")||{}).value = state.volumi?.[0]?.piani ?? 0;
-    (document.getElementById("dest2")||{}).value = state.volumi?.[1]?.destinazione ?? "Interrato e pertinenze";
-    (document.getElementById("piani2")||{}).value = state.volumi?.[1]?.piani ?? 0;
-
-    // costruttive
-    document.querySelectorAll('#costrOpts input[type="checkbox"]').forEach(c=>{
-      c.checked = (state.costruttive||[]).includes(c.value);
-    });
-
-    (document.getElementById("finiture")||{}).value = state.finiture||"";
-    (document.getElementById("cantiere")||{}).value = state.cantiere||"";
-    (document.getElementById("ascensore")||{}).checked = !!state.ascensore;
-    (document.getElementById("fv")||{}).checked = !!state.fv;
-
-    // gps info
-    const info=document.getElementById("gpsInfo");
-    if(info){
-      if(state.gps?.latitude){
-        info.textContent = `Coordinate: ${Number(state.gps.latitude).toFixed(6)}, ${Number(state.gps.longitude).toFixed(6)} (±${Math.round(state.gps.accuracy||0)}m)`;
-      } else info.textContent="";
-    }
-  }
-
-  /* ======== REPORT ======== */
-  function buildReportObject(){
-    syncFromUI();
-
-    const report = {
-      appVersion: state.version || "",
-      createdAt: state.createdAt || "",
-      updatedAt: state.updatedAt || "",
-      pratica: state.pratica || "",
-      assicurato: state.assicurato || "",
-      riferimentoTag: state.tagRef || "",
-      indirizzo: state.indirizzo || "",
-      gps: state.gps || null,
-      tipologiaFabbricato: state.tipologia || "",
-      tipologiaAltro: state.tipologiaAltro || "",
-      numeroUI: state.numUI || 0,
-      volumi: state.volumi || [],
-      caratteristicheCostruttive: state.costruttive || [],
-      finiture: state.finiture || "",
-      cantiere: state.cantiere || "",
-      ascensore: !!state.ascensore,
-      pannelliFV: !!state.fv,
-      unita: (state.unita||[]).map((u,idx)=>({
-        index: idx+1,
-        nome: u.nome||"",
-        piano: u.piano||0,
-        titolo: formatUnitaTitle(u, idx),
-        locali: (u.locali||[]).map((l,li)=>({
-          index: li+1,
-          locale: (l.localeSel||"") || "",
-          localeAltro: l.localeAltro||"",
-          danni: l.danniSel||[],
-          note: l.note||"",
-          photoSection: photoSectionFor(u.id,l.id)
-        }))
-      })),
-      photos: (state.photos||[]).map(p=>({
-        section: p.section,
-        fileName: p.fileName,
-        originalName: p.originalName,
-        mime: p.mime,
-        size: p.size,
-        createdAt: p.createdAt,
-        meta: p.meta || {}
-      }))
-    };
-
-    return report;
-  }
-
-  function buildReportText(obj){
-    const lines=[];
-    lines.push("REPORT SOPRALLUOGO");
-    lines.push(`Versione app: ${obj.appVersion||""}`);
-    lines.push(`Creato: ${obj.createdAt||""}`);
-    lines.push(`Aggiornato: ${obj.updatedAt||""}`);
-    lines.push("");
-    lines.push(`Pratica/Sinistro: ${obj.pratica||""}`);
-    lines.push(`Assicurato: ${obj.assicurato||""}`);
-    lines.push(`Tag: ${obj.riferimentoTag||""}`);
-    lines.push(`Indirizzo: ${obj.indirizzo||""}`);
-    if(obj.gps?.latitude){
-      lines.push(`GPS: ${obj.gps.latitude}, ${obj.gps.longitude} (±${obj.gps.accuracy||""}m)`);
-    }
-    lines.push("");
-    lines.push("PANORAMICA RISCHIO");
-    lines.push(`Tipologia: ${obj.tipologiaFabbricato||""} ${obj.tipologiaAltro?("("+obj.tipologiaAltro+")"):""}`);
-    lines.push(`Numero U.I.: ${obj.numeroUI||0}`);
-    lines.push("Volumi:");
-    (obj.volumi||[]).forEach((v,i)=>{
-      lines.push(`- ${i+1}) ${v.destinazione||""} | piani: ${v.piani||0}`);
-    });
-    lines.push(`Caratteristiche: ${(obj.caratteristicheCostruttive||[]).join(", ")}`);
-    lines.push(`Finiture: ${obj.finiture||""}`);
-    lines.push(`Cantiere: ${obj.cantiere||""}`);
-    lines.push(`Ascensore: ${obj.ascensore?"SI":"NO"}`);
-    lines.push(`Pannelli FV: ${obj.pannelliFV?"SI":"NO"}`);
-    lines.push("");
-    lines.push("UNITA / LOCALI");
-    (obj.unita||[]).forEach(u=>{
-      lines.push(`- UNITA ${u.index}: ${u.titolo}`);
-      (u.locali||[]).forEach(l=>{
-        const loc = l.locale || l.localeAltro || `LOCALE ${l.index}`;
-        lines.push(`  - LOCALE ${l.index}: ${loc}`);
-        lines.push(`    Danni: ${(l.danni||[]).join(", ")}`);
-        if(l.note) lines.push(`    Note: ${l.note}`);
-        lines.push(`    Sezione foto: ${l.photoSection}`);
+    async function idbClear(storeName){
+      const db = await openDB();
+      return new Promise((resolve, reject)=>{
+        const tx = db.transaction(storeName, "readwrite");
+        const req = tx.objectStore(storeName).clear();
+        req.onsuccess = ()=>{ db.close(); resolve(true); };
+        req.onerror = ()=>{ db.close(); reject(req.error); };
       });
-    });
-    lines.push("");
-    lines.push("FOTO");
-    (obj.photos||[]).forEach(p=>{
-      lines.push(`- ${p.fileName} | section: ${p.section} | orig: ${p.originalName}`);
-    });
-    return lines.join("\n");
-  }
+    }
 
-  /* ======== ZIP + SHARE ======== */
-  async function shareZip(){
-    try{
-      syncFromUI();
-
-      const zip = new JSZip();
-      const folder = zip.folder("FOTO");
-
-      // report
-      let reportObj=null, reportTxt=null;
+    async function savePhotoToOffline(item){
+      // item: {id, file, meta, previewName}
       try{
-        reportObj = buildReportObject();
-        reportTxt = buildReportText(reportObj);
-        zip.file("report.json", JSON.stringify(reportObj, null, 2));
-        zip.file("report.txt", reportTxt);
-      }catch(e){
-        zip.file("report_error.txt", String(e));
+        const blob = item.file;
+        await idbPut(IDB_STORE_PHOTOS, {
+          id: item.id,
+          createdAt: Date.now(),
+          originalName: item.file?.name || "photo.jpg",
+          mime: item.file?.type || "image/jpeg",
+          meta: item.meta,
+          blob
+        });
+      }catch(err){
+        log("⚠️ Offline foto non salvata: " + (err?.message||err));
       }
+    }
 
-      // foto
-      const photos=state.photos||[];
-      for(const p of photos){
-        const blob = dataUrlToBlob(p.dataUrl, p.mime);
-        folder.file(p.fileName || (p.originalName||("foto_"+p.id+".jpg")), blob);
+    async function loadOfflinePhotos(){
+      const rows = await idbGetAll(IDB_STORE_PHOTOS);
+      // order by createdAt
+      rows.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      const list = [];
+      for(const r of rows){
+        let fileObj = null;
+        try{
+          fileObj = new File([r.blob], r.originalName || "photo.jpg", { type: r.mime || "image/jpeg" });
+        }catch(e){
+          // fallback
+          fileObj = r.blob;
+          fileObj.name = r.originalName || "photo.jpg";
+        }
+        list.push({ id:r.id, file:fileObj, meta:r.meta||{}, previewName:r.originalName||"photo.jpg" });
       }
+      return list;
+    }
 
-      const blob = await zip.generateAsync({type:"blob"});
-      const base = getZipBaseName();
-      const ts = new Date().toISOString().replace(/[:.]/g,"-");
-      const fileName = `${base}_${ts}.zip`;
+    async function saveDraft(){
+      const draft = {
+        key:"current",
+        savedAt: Date.now(),
+        header: {
+          pratica: (document.getElementById("pratica")?.value||"").trim(),
+          assicurato: (document.getElementById("assicurato")?.value||"").trim(),
+          refTag: (document.getElementById("refTag")?.value||"").trim(),
+          indirizzo: (document.getElementById("indirizzo")?.value||"").trim()
+        },
+        photos: dataStore.photos.map(p=>({id:p.id, meta:p.meta, previewName:p.previewName}))
+      };
+      await idbPut(IDB_STORE_DRAFT, draft);
+      log("💾 Bozza salvata (offline).");
+    }
 
-      const file = new File([blob], fileName, {type:"application/zip"});
+    async function loadDraft(){
+      const d = await idbGet(IDB_STORE_DRAFT, "current");
+      if(!d){
+        log("Nessuna bozza offline trovata.");
+        return false;
+      }
+      // restore header fields
+      if(d.header){
+        if(document.getElementById("pratica")) document.getElementById("pratica").value = d.header.pratica||"";
+        if(document.getElementById("assicurato")) document.getElementById("assicurato").value = d.header.assicurato||"";
+        if(document.getElementById("refTag")) document.getElementById("refTag").value = d.header.refTag||"";
+        if(document.getElementById("indirizzo")) document.getElementById("indirizzo").value = d.header.indirizzo||"";
+      }
+      // restore photos from store
+      dataStore.photos = await loadOfflinePhotos();
+      recomputePreviewNames();
+      updateAllSummaries();
+      log("♻️ Bozza ripristinata: " + dataStore.photos.length + " foto.");
+      return true;
+    }
 
-      // share api
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-        await navigator.share({files:[file], title:"Sopralluogo", text:"ZIP sopralluogo"});
-        toast("Condiviso");
+    async function clearDraftAndPhotos(){
+      await idbClear(IDB_STORE_PHOTOS);
+      await idbClear(IDB_STORE_DRAFT);
+      log("🧹 Offline pulito (bozza + foto).");
+    }
+
+
+const dataStore = { photos: [], noteGenerali: "" };
+    let gpsData = null;
+
+    function log(msg){
+      const el=document.getElementById("log");
+      const ts=new Date().toISOString().substring(11,19);
+      el.textContent += "["+ts+"] "+msg+"\n";
+      el.scrollTop = el.scrollHeight;
+    }
+    function sanitize(s){ return (s||"").toString().replace(/[^a-zA-Z0-9_\-]/g,"_"); }
+    function getRadioValue(name){
+      const el=document.querySelector("input[name='"+name+"']:checked");
+      return el ? el.value : "";
+    }
+    function getCheckedValues(containerId){
+      const box=document.getElementById(containerId);
+      if(!box) return [];
+      return Array.from(box.querySelectorAll("input[type='checkbox']:checked")).map(x=>x.value);
+    }
+
+    function acquireGPS(){
+      if(!navigator.geolocation){ log("GPS non supportato"); return; }
+      navigator.geolocation.getCurrentPosition(
+        (pos)=>{
+          gpsData={lat:pos.coords.latitude,lng:pos.coords.longitude,accuracy:pos.coords.accuracy,timestamp:new Date().toISOString()};
+          log("GPS acquisito: "+gpsData.lat.toFixed(6)+", "+gpsData.lng.toFixed(6));
+          const indirizzoEl=document.getElementById("indirizzo");
+          if(!indirizzoEl.value) indirizzoEl.value="Coord: "+gpsData.lat.toFixed(6)+", "+gpsData.lng.toFixed(6);
+        },
+        (err)=>log("GPS non disponibile: "+err.message)
+      );
+    }
+    function readRefFromUrl(){
+      const params=new URLSearchParams(window.location.search);
+      const ref=params.get("ref")||params.get("prot")||params.get("id")||"";
+      if(ref){ document.getElementById("praticaId").value=ref; log("Pratica da URL: "+ref); }
+    }
+
+    function createVolumeCard(destDefault="Residenziale", pianiDefault=1){
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      
+      wrap.innerHTML = `
+        <div class="volLbl">Destinazione + N. piani (accetta negativi)</div>
+        <div class="volRow">
+          <input type="text" class="volDest" value="${destDefault}" placeholder="Destinazione" />
+          <div class="pianiWrap">
+            <button type="button" class="secondary btn-small iconBtn round volMinus">-</button>
+            <input type="number" class="volPiani" value="${pianiDefault}" step="1">
+            <button type="button" class="secondary btn-small iconBtn round volPlus">+</button>
+          </div>
+          <button type="button" class="danger btn-small iconBtn trashBtn volRemove" title="Elimina volume">🗑️</button>
+        </div>
+      `;
+
+      wrap.querySelector(".volMinus").addEventListener("click",()=>{
+        const el=wrap.querySelector(".volPiani");
+        el.value = (parseInt(el.value||"0",10)-1);
+      });
+      wrap.querySelector(".volPlus").addEventListener("click",()=>{
+        const el=wrap.querySelector(".volPiani");
+        el.value = (parseInt(el.value||"0",10)+1);
+      });
+      wrap.querySelector(".volRemove").addEventListener("click",()=>wrap.remove());
+      return wrap;
+    }
+    function getVolumi(){
+      const nodes=document.querySelectorAll("#volumiContainer .box");
+      return Array.from(nodes).map((n)=>({
+        destinazione:(n.querySelector(".volDest")?.value||"").trim(),
+        piani:parseInt(n.querySelector(".volPiani")?.value||"0",10)
+      }));
+    }
+
+    const LOCAL_PRESETS=["Ingresso","Soggiorno","Cucina","Bagno","Camera","Disimpegno","Corridoio","Balcone","Terrazzo","Tetto","Facciata","Cantina","Box"];
+    const DANNO_PRESETS=["danni AC","RRG","cristallo","guasti ladri"];
+
+    function createLocaleCard(){
+      const uid = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+      const capId = "cap_" + uid;
+      const upId  = "up_" + uid;
+
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      wrap.dataset.localeUid = uid;
+      wrap.innerHTML = `
+        <div class="titleRow" style="margin-bottom:.2rem;">
+          <div class="inline" style="gap:.45rem;margin:0;">
+            <span class="pill">Locale</span> <span class="localeTitleNum">#<span class="localeIdx">1</span></span>
+            <span class="muted"> e foto</span>
+          </div>
+          <button type="button" class="danger btn-small removeLocaleBtn">🗑️ Elimina</button>
+        </div>
+
+        <label>Locale</label>
+        <div class="chk-grid localeChecks"></div>
+        <input type="text" class="localeAltro" placeholder="Altro locale (testo libero)" />
+
+        <label>Tipi di danno</label>
+        <div class="chk-grid dannoChecks"></div>
+        <input type="text" class="dannoAltro" placeholder="Altro tipo danno (testo libero)" />
+
+        <label>Note locale</label>
+        <textarea class="noteLocale" placeholder="Note libere sul locale/danno"></textarea>
+
+        <div class="fileRow">
+          <label class="fileBtn capture" for="${capId}"><span class="bI">📷</span> Scatta</label>
+          <input type="file" id="${capId}" class="photoCaptureLocale" accept="image/*" capture="environment" multiple />
+
+          <label class="fileBtn upload" for="${upId}"><span class="bI">🖼️</span> Carica</label>
+          <input type="file" id="${upId}" class="photoUploadLocale" accept="image/*" multiple />
+        </div>
+
+        <div class="secSummary" id="sum_${uid}">
+          <div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span></div>
+          <div class="muted">Nessuna foto.</div>
+        </div>
+      `;
+
+      const localeChecks=wrap.querySelector(".localeChecks");
+      LOCAL_PRESETS.forEach(v=>{
+        const lab=document.createElement("label");
+        lab.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+        localeChecks.appendChild(lab);
+      });
+
+      const dannoChecks=wrap.querySelector(".dannoChecks");
+      DANNO_PRESETS.forEach(v=>{
+        const lab=document.createElement("label");
+        lab.innerHTML = `<input type="checkbox" value="${v}"> ${v}`;
+        dannoChecks.appendChild(lab);
+      });
+
+      wrap.querySelector(".removeLocaleBtn").addEventListener("click",()=>{ const u=wrap.closest("[data-unita-uid]"); wrap.remove(); renumberLocales(u); refreshAllSummaries(); });
+      return wrap;
+    }
+
+    function createUnitaCard(){
+      const uid = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+
+      const wrap=document.createElement("div");
+      wrap.className="box";
+      wrap.dataset.unitaUid = uid;
+      wrap.innerHTML = `
+        <div class="titleRow">
+          <div class="inline" style="gap:.45rem;margin:0;">
+            <span class="pill">Unita</span>
+            <span class="muted"></span>
+          </div>
+          <button type="button" class="danger btn-small removeUnitaBtn">🗑️ Elimina</button>
+        </div>
+
+        <div class="row">
+          <div>
+            
+        <div class="unitaRow">
+          <input type="text" class="unitaNome" placeholder="Es. Rossi / Interno 5" />
+          <div class="pianoWrap">
+            <button type="button" class="secondary btn-small pBtn pianoMinus">-</button>
+            <input type="number" class="unitaPiano" placeholder="P" step="1" />
+            <button type="button" class="secondary btn-small pBtn pianoPlus">+</button>
+          </div>
+        </div>
+
+        </div>
+<div class="localiContainer"></div>
+
+        <div class="inline" style="justify-content:flex-end;margin-top:.45rem;">
+          <button type="button" class="secondary btn-small addLocaleBtn">+ Aggiungi locale</button>
+        </div>
+      `;
+
+      const localiContainer=wrap.querySelector(".localiContainer");
+      const nomeEl = wrap.querySelector('.unitaNome');
+      const pianoEl = wrap.querySelector('.unitaPiano');
+
+      wrap.querySelector('.pianoMinus').addEventListener('click',()=>{
+        pianoEl.value = (parseInt(pianoEl.value||'0',10)-1);
+      });
+      wrap.querySelector('.pianoPlus').addEventListener('click',()=>{
+        pianoEl.value = (parseInt(pianoEl.value||'0',10)+1);
+      });
+
+      wrap.querySelector(".addLocaleBtn").addEventListener("click",()=>{
+        const loc=createLocaleCard();
+        localiContainer.appendChild(loc);
+        bindLocalePhotoHandlers(wrap, loc);
+        renumberLocales(wrap);
+        refreshAllSummaries();
+      });
+
+      const loc0=createLocaleCard();
+      localiContainer.appendChild(loc0);
+      renumberLocales(wrap);
+
+      wrap.querySelector(".removeUnitaBtn").addEventListener("click",()=>wrap.remove());
+      return wrap;
+    }
+
+    // --- per-sezione + finale
+    function sectionKey(meta){
+      if(meta.type==="PANORAMICA") return "PANORAMICA";
+      return meta.localeUid ? ("LOCALE:" + meta.localeUid) : "LOCALE:ND";
+    }
+
+    function updateSectionSummary(secKey){
+      if(secKey==="PANORAMICA"){
+        const box=document.getElementById("secSum_pan");
+        const items=dataStore.photos.filter(p=>sectionKey(p.meta)===secKey);
+        if(!items.length){
+          box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span></div><div class="muted">Nessuna foto.</div>`;
+          return;
+        }
+        const names = items.map(p=>({name:(p.previewName||p.file.name), ref:p}));
+        box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Panoramica)</span> - ${items.length} foto</div><ul>${names.map(n=>`<li>${n.name} <button class='danger btn-small' onclick='removePhoto("${secKey}", "${n.name}")'>🗑️</button></li>`).join("")}</ul>`;
         return;
       }
-
-      // fallback download
-      downloadBlob(blob, fileName);
-      toast("Condivisione non disponibile: scaricato ZIP");
-    }catch(e){
-      console.error(e);
-      toast("Errore generazione ZIP");
+      if(secKey.startsWith("LOCALE:")){
+        const uid=secKey.split(":")[1];
+        const box=document.getElementById("sum_"+uid);
+        if(!box) return;
+        const items=dataStore.photos.filter(p=>sectionKey(p.meta)===secKey);
+        if(!items.length){
+          box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span></div><div class="muted">Nessuna foto.</div>`;
+          return;
+        }
+        const names=items.map(p=>({name:(p.previewName||p.file.name), ref:p}));
+        box.innerHTML = `<div><b>Riepilogo sezione</b> <span class="muted">(Locale)</span> - ${items.length} foto</div><ul>${names.map(n=>`<li>${n.name} <button class='danger btn-small' onclick='removePhoto("${secKey}", "${n.name}")'>🗑️</button></li>`).join("")}</ul>`;
+      }
     }
-  }
 
-  function dataUrlToBlob(dataUrl, mime){
-    if(!dataUrl) return new Blob([], {type:mime||"application/octet-stream"});
-    const parts=dataUrl.split(",");
-    const b64=parts[1] || "";
-    const bin=atob(b64);
-    const arr=new Uint8Array(bin.length);
-    for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
-    return new Blob([arr], {type:mime||"image/jpeg"});
-  }
-
-  function downloadBlob(blob, name){
-    const a=document.createElement("a");
-    const url=URL.createObjectURL(blob);
-    a.href=url;
-    a.download=name;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(()=>{
-      URL.revokeObjectURL(url);
-      a.remove();
-    }, 0);
-  }
-
-  /* ======== JSZip minimal (embed) ======== */
-  /*! JSZip v3.10.1 - MIT - https://stuk.github.io/jszip/ */
-  /* Minified build included (small) */
-</script>
-
-<!-- JSZip (min) -->
-<script>
-/* JSZip 3.10.1 - minified */
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{("undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this).JSZip=e()}}(function(){return function(){var e={};function t(n){if(e[n])return e[n].exports;var r=e[n]={i:n,l:!1,exports:{}};return n.call(r.exports,r,r.exports,t),r.l=!0,r.exports}return t.m=[],t.c=e,t.d=function(e,n,r){t.o(e,n)||Object.defineProperty(e,n,{enumerable:!0,get:r})},t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t.t=function(e,n){if(1&n&&(e=t(e)),8&n)return e;if(4&n&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(t.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&n&&"string"!=typeof e)for(var o in e)t.d(r,o,function(t){return e[t]}.bind(null,o));return r},t.n=function(e){var n=e&&e.__esModule?function(){return e.default}:function(){return e};return t.d(n,"a",n),n},t.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},t.p="",t(t.s=0)}([function(e,t,n){e.exports=n(1)},function(e,t,n){/* trimmed for brevity in this message */throw new Error("JSZip minified content placeholder. Please keep your existing JSZip block in index.html.");}])}()});
-</script>
-
-<script>
-  function trashSvg(){
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="#991b1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M3 6h18"/>
-      <path d="M8 6V4h8v2"/>
-      <path d="M19 6l-1 14H6L5 6"/>
-      <path d="M10 11v6"/>
-      <path d="M14 11v6"/>
-    </svg>`;
-  }
-
-  // init
-  (function init(){
-    ensurePanoInputs();
-    document.querySelectorAll('#tipologiaOpts input[type="radio"]').forEach(r=>{
-      r.addEventListener("change", ()=>{ syncFromUI(); saveDraftSilent(); });
-    });
-    document.querySelectorAll('#costrOpts input[type="checkbox"]').forEach(c=>{
-      c.addEventListener("change", ()=>{ syncFromUI(); saveDraftSilent(); });
-    });
-    ["praticaId","assicurato","tagRef","indirizzo","tipologiaAltro","numUI","dest1","piani1","dest2","piani2","finiture","cantiere","ascensore","fv"]
-      .forEach(id=>{
-        const el=document.getElementById(id);
-        if(!el) return;
-        el.addEventListener("input", ()=>{ syncFromUI(); saveDraftSilent(); });
-        el.addEventListener("change", ()=>{ syncFromUI(); saveDraftSilent(); });
+    function updateFinalSummary(){
+      const box=document.getElementById("finalList");
+      if(!dataStore.photos.length){
+        box.innerHTML = `<div class="muted">Nessuna foto.</div>`;
+        return;
+      }
+      const items = dataStore.photos.map((p,i)=>{
+        const sec = (p.meta.type==="PANORAMICA") ? "PANORAMICA" : `UNITA ${p.meta.unitaPiano||""} ${p.meta.unitaNome||""} - ${((p.meta.localeTags||[]).join("+")||p.meta.localeAltro||"LOCALE")} - ${((p.meta.danniTags||[]).join("+")||p.meta.danniAltro||"DANNO")}`;
+        return { idx:i+1, sec, name: p.previewName || p.file.name };
       });
 
-    // render initial
-    renderUnita();
-    renderSectionPhotoList("PANORAMICA");
-    renderAllPhotosList();
+      box.innerHTML = `
+        <div><b>Totale</b>: ${items.length} foto</div>
+        <ul>
+          ${items.map(x=>`<li>${x.idx}. <span class="muted">[${x.sec}]</span> ${x.name}</li>`).join("")}
+        </ul>
+      `;
+    }
 
-    // try auto-load draft silently
-    loadDraft().catch(()=>{});
-  })();
-</script>
 
+    function updateAllSummaries(){
+      // recompute per-section summaries from photos
+      const keys = new Set(dataStore.photos.map(p=>sectionKey(p.meta)));
+      for(const k of keys){
+        updateSectionSummary(k);
+      }
+      updateFinalSummary();
+    }
+
+    function refreshAllSummaries(){
+      updateSectionSummary("PANORAMICA");
+      const localeIds = Array.from(document.querySelectorAll("[id^='sum_']")).map(el=>el.id.replace("sum_",""));
+      for(const uid of localeIds){
+        updateSectionSummary("LOCALE:"+uid);
+      }
+      updateFinalSummary();
+    }
+
+    // --- add photos
+    async function addPhotos(files, meta){
+      if(!files || !files.length) return;
+      for(const file of Array.from(files)){
+        const id = uid();
+        const item = { id, file, meta:{...meta}, previewName: file.name };
+        dataStore.photos.push(item);
+        // autosave offline
+        savePhotoToOffline(item);
+        log("Foto aggiunta: " + file.name);
+      }
+      updateSectionSummary(sectionKey(meta));
+      updateFinalSummary();
+    }
+
+    // --- bind locale handlers
+    function bindLocalePhotoHandlers(unitaEl, localeEl){
+      const unitaNome = () => (unitaEl.querySelector(".unitaNome")?.value||"").trim();
+      const unitaPiano = () => (unitaEl.querySelector(".unitaPiano")?.value||"").trim();
+
+      const cap=localeEl.querySelector(".photoCaptureLocale");
+      const up=localeEl.querySelector(".photoUploadLocale");
+      if(cap.dataset.bound==="1") return;
+
+      const handler = async (files)=>{
+        const localeTags = Array.from(localeEl.querySelectorAll(".localeChecks input[type='checkbox']:checked")).map(x=>x.value);
+        const localeAltro = (localeEl.querySelector(".localeAltro")?.value||"").trim();
+        const danniTags = Array.from(localeEl.querySelectorAll(".dannoChecks input[type='checkbox']:checked")).map(x=>x.value);
+        const danniAltro = (localeEl.querySelector(".dannoAltro")?.value||"").trim();
+        const note = (localeEl.querySelector(".noteLocale")?.value||"").trim();
+
+        const meta = {
+          type:"LOCALE",
+          unitaNome: unitaNome(),
+          unitaPiano: unitaPiano(),
+          localeTags, localeAltro,
+          danniTags, danniAltro,
+          note,
+          localeUid: localeEl.dataset.localeUid
+        };
+        await addPhotos(files, meta);
+      };
+
+      cap.addEventListener("change", async (e)=>{ await handler(e.target.files); e.target.value=""; });
+      up.addEventListener("change", async (e)=>{ await handler(e.target.files); e.target.value=""; });
+
+      cap.dataset.bound="1";
+      up.dataset.bound="1";
+    }
+
+    // --- recompute names based on current UI selections
+    function recomputePreviewNames(){
+      const counters = {};
+      for(const item of dataStore.photos){
+        const original=item.file.name||"";
+        const ext=original.includes(".") ? original.split(".").pop() : "jpg";
+
+        if(item.meta.type==="PANORAMICA"){
+          const key="PANORAMICA";
+          counters[key]=(counters[key]||0)+1;
+          const idx=String(counters[key]).padStart(3,"0");
+          item.previewName = "-PANORAMICA-" + idx + "." + ext;
+          continue;
+        }
+
+        // For locale photos: fetch current locale + unit data
+        const uid = item.meta.localeUid;
+        const localeEl = uid ? document.querySelector("[data-locale-uid='"+uid+"']") : null;
+        if(localeEl){
+          const unitEl = localeEl.closest("[data-unita-uid]");
+          const uNome = (unitEl?.querySelector(".unitaNome")?.value||"").trim();
+          const uPiano = (unitEl?.querySelector(".unitaPiano")?.value||"").trim();
+
+          const localeTags = Array.from(localeEl.querySelectorAll(".localeChecks input[type='checkbox']:checked")).map(x=>x.value);
+          const localeAltro = (localeEl.querySelector(".localeAltro")?.value||"").trim();
+          const danniTags = Array.from(localeEl.querySelectorAll(".dannoChecks input[type='checkbox']:checked")).map(x=>x.value);
+          const danniAltro = (localeEl.querySelector(".dannoAltro")?.value||"").trim();
+          const note = (localeEl.querySelector(".noteLocale")?.value||"").trim();
+
+          item.meta.unitaNome = uNome;
+          item.meta.unitaPiano = uPiano;
+          item.meta.localeTags = localeTags;
+          item.meta.localeAltro = localeAltro;
+          item.meta.danniTags = danniTags;
+          item.meta.danniAltro = danniAltro;
+          item.meta.note = note;
+        }
+
+        const pianoKey = sanitize(item.meta.unitaPiano || "P_ND");
+        let rawNomeKey = (item.meta.unitaNome || "NOME");
+        rawNomeKey = rawNomeKey.replace(/^UI[_\- ]*/i, "");
+        const nomeKey = sanitize(rawNomeKey);
+        const locLabelKey = (item.meta.localeTags && item.meta.localeTags.length) ? item.meta.localeTags.join("+") : (item.meta.localeAltro || "LOCALE");
+        const localeKey = sanitize(locLabelKey);
+        const dannoLabelKey = (item.meta.danniTags && item.meta.danniTags.length) ? item.meta.danniTags.join("+") : (item.meta.danniAltro || "DANNO");
+        const dannoKey = sanitize(dannoLabelKey);
+
+        const key = [pianoKey,nomeKey,localeKey,dannoKey].join("_");
+        counters[key]=(counters[key]||0)+1;
+        const idx=String(counters[key]).padStart(3,"0");
+
+        item.previewName = "-" + pianoKey + "_" + nomeKey + "_" + localeKey + "_" + dannoKey + "-" + idx + "." + ext;
+      }
+
+      refreshAllSummaries();
+      log("Nomi foto aggiornati (preview).");
+    }
+
+    
+    function removePhoto(secKey, name){
+      if(!confirm("Eliminare la foto selezionata?")) return;
+      const idx = dataStore.photos.findIndex(p => (p.previewName||p.file.name) === name && sectionKey(p.meta)===secKey);
+      if(idx>-1){
+        dataStore.photos.splice(idx,1);
+        log("Foto eliminata: "+name);
+        refreshAllSummaries();
+      }
+    }
+
+
+    function refreshSection(secKey){
+      log("Aggiorna nomi foto: " + secKey);
+      refreshAllSummaries();
+    }
+
+
+    function renumberLocales(unitEl){
+      if(!unitEl) return;
+      const locales = Array.from(unitEl.querySelectorAll(".localiContainer .box[data-locale-uid]"));
+      locales.forEach((loc, i)=>{
+        const idxEl = loc.querySelector(".localeIdx");
+        if(idxEl) idxEl.textContent = String(i+1);
+      });
+    }
+
+
+    // Numero U.I. (+/-)
+    const uiCountEl = document.getElementById('uiCount');
+    const uiMinus = document.getElementById('uiMinus');
+    const uiPlus = document.getElementById('uiPlus');
+    if(uiCountEl && uiMinus && uiPlus){
+      uiMinus.addEventListener('click', ()=>{
+        const v = parseInt(uiCountEl.value||"0",10);
+        uiCountEl.value = String(Math.max(0, v-1));
+      });
+      uiPlus.addEventListener('click', ()=>{
+        const v = parseInt(uiCountEl.value||"0",10);
+        uiCountEl.value = String(v+1);
+      });
+    }
+
+
+    // Auto-detect offline photos (se presenti) e carica in memoria
+    (async ()=>{
+      try{
+        const existing = await idbGetAll(IDB_STORE_PHOTOS);
+        if(existing && existing.length && dataStore.photos.length===0){
+          dataStore.photos = await loadOfflinePhotos();
+          recomputePreviewNames();
+          updateAllSummaries();
+          log("📦 Trovate " + existing.length + " foto offline (non ancora inviate). Usa ♻️ Riprendi per ricaricare anche i campi.");
+        }
+      }catch(e){}
+    })();
+
+// --- INIT
+    readRefFromUrl();
+
+    // GPS su richiesta
+    const gpsBtn = document.getElementById('gpsBtn');
+    if(gpsBtn){
+      gpsBtn.addEventListener('click', ()=>acquireGPS());
+    }
+
+    const volCont=document.getElementById("volumiContainer");
+    volCont.appendChild(createVolumeCard("Residenziale", 1));
+    volCont.appendChild(createVolumeCard("Interrato e pertinenze", -1));
+    document.getElementById("addVolumeBtn").addEventListener("click",()=>volCont.appendChild(createVolumeCard()));
+
+    const unitaCont=document.getElementById("unitaContainer");
+    const u0=createUnitaCard();
+    unitaCont.appendChild(u0);
+    u0.querySelectorAll(".localiContainer .box[data-locale-uid]").forEach(loc=>bindLocalePhotoHandlers(u0, loc));
+
+    document.getElementById("addUnitaBtn").addEventListener("click",()=>{
+      const u=createUnitaCard();
+      unitaCont.appendChild(u);
+      u.querySelectorAll(".localiContainer .box[data-locale-uid]").forEach(loc=>bindLocalePhotoHandlers(u, loc));
+      refreshAllSummaries();
+    });
+
+    async function addPano(files){
+      if(!files||!files.length) return;
+      const meta={ type:"PANORAMICA" };
+      await addPhotos(files, meta);
+    }
+    document.getElementById("photoRiskCapture").addEventListener("change", async (e)=>{ await addPano(e.target.files); e.target.value=""; });
+    document.getElementById("photoRiskUpload").addEventListener("change", async (e)=>{ await addPano(e.target.files); e.target.value=""; });
+
+    document.getElementById("noteGenerali").addEventListener("input",(e)=>dataStore.noteGenerali=e.target.value);
+
+    document.getElementById("resetBtn").addEventListener("click",()=>{
+      if(!confirm("Sicuro di svuotare foto e note?")) return;
+      dataStore.photos=[];
+      dataStore.noteGenerali="";
+      document.getElementById("noteGenerali").value="";
+      document.getElementById("log").textContent="";
+      refreshAllSummaries();
+      acquireGPS();
+      log("Dati azzerati.");
+    });
+
+    document.getElementById("refreshNamesBtn").addEventListener("click", ()=>{
+      if(!dataStore.photos.length){ alert("Nessuna foto da aggiornare."); return; }
+      recomputePreviewNames();
+    });
+
+    
+    async function buildZipPackage(){
+      if(!dataStore.photos.length){ throw new Error("Non ci sono foto da salvare."); }
+
+      // riallinea nomi
+      recomputePreviewNames();
+
+      const zip = new JSZip();
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      const now = new Date();
+      const baseRef = sanitize((document.getElementById("praticaId")?.value?.trim()
+        || document.getElementById("pratica")?.value?.trim()
+        || document.getElementById("refTag")?.value?.trim()) || "sopralluogo");
+
+      const filename = baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      const blob = await zip.generateAsync({type:"blob"});
+      return { blob, filename };
+    }
+
+    function buildMailText(){
+      const pratica = (document.getElementById("pratica")?.value||"").trim();
+      const assicurato = (document.getElementById("assicurato")?.value||"").trim();
+      const refTag = (document.getElementById("refTag")?.value||"").trim();
+      const indirizzo = (document.getElementById("indirizzo")?.value||"").trim();
+      const nfoto = dataStore.photos.length;
+
+      return [
+        "Trasmissione sopralluogo - report sintetico",
+        "",
+        "Pratica/Sinistro: " + (pratica || "-"),
+        "Assicurato: " + (assicurato || "-"),
+        "Riferimento tag: " + (refTag || "-"),
+        "Indirizzo: " + (indirizzo || "-"),
+        "Foto allegate (ZIP): " + nfoto,
+        "",
+        "Note: (se necessario integrare)",
+        "- "
+      ].join("\n");
+    }
+
+    async function shareZipByEmail(){
+      try{
+        const { blob, filename } = await buildZipPackage();
+        const file = new File([blob], filename, {type:"application/zip"});
+        const text = buildMailText();
+        const title = "Sopralluogo - " + (document.getElementById("refTag")?.value?.trim() || "ZIP");
+
+        // Web Share con file: funziona bene solo su contesto sicuro (https o localhost)
+        const isSecure = (window.isSecureContext || location.hostname === "127.0.0.1" || location.hostname === "localhost");
+        const canShareFiles = !!(isSecure && navigator.share && navigator.canShare && navigator.canShare({ files:[file] }));
+
+        if(canShareFiles){
+          try{
+            await navigator.share({ title, text, files:[file] });
+            log("📧 Condivisione avviata (scegli Email/Outlook/Gmail).");
+            return;
+          }catch(e){
+            // se l'utente annulla o il sistema nega, fallback
+            log("📧 Share non disponibile (" + (e?.message||"") + "), fallback mailto.");
+          }
+        }
+
+        // Fallback affidabile: scarica ZIP + apre mailto con testo (allegato manuale)
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+
+        const subject = encodeURIComponent(title);
+        const body = encodeURIComponent(text + "\n\n(Allega il file ZIP appena scaricato: " + filename + ")");
+        window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+        log("📧 Mailto aperto (allega manualmente lo ZIP).");
+      }catch(err){
+        alert(err?.message || "Errore invio email.");
+      }
+    }
+
+
+    async function buildZipPackage(){
+      if(!dataStore.photos.length){ throw new Error("Non ci sono foto da salvare."); }
+      recomputePreviewNames();
+
+      const zip = new JSZip();
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      const now = new Date();
+      const baseRef = sanitize((document.getElementById("pratica")?.value?.trim()
+        || document.getElementById("refTag")?.value?.trim()) || "sopralluogo");
+      const filename = baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      const blob = await zip.generateAsync({type:"blob"});
+      return { blob, filename };
+    }
+
+    async function shareZipPackage(){
+      try{
+        const { blob, filename } = await buildZipPackage();
+        const file = new File([blob], filename, {type:"application/zip"});
+
+        // share sheet con file (solo https o localhost)
+        const isSecure = (window.isSecureContext || location.hostname === "127.0.0.1" || location.hostname === "localhost");
+        const canShareFiles = !!(isSecure && navigator.share && navigator.canShare && navigator.canShare({ files:[file] }));
+
+        if(canShareFiles){
+          await navigator.share({ title: filename, files:[file] });
+          log("🔗 Condivisione avviata.");
+          return;
+        }
+
+        // fallback: scarica
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        alert("Condivisione non disponibile: ZIP scaricato.");
+      }catch(err){
+        alert(err?.message || "Errore condivisione.");
+      }
+    }
+
+document.getElementById("generateZipBtn").addEventListener("click", async ()=>{
+      if(!dataStore.photos.length){ alert("Non ci sono foto da salvare."); return; }
+
+      // prima riallinea i nomi in base allo stato attuale
+      recomputePreviewNames();
+
+      const zip=new JSZip();
+
+      for(const item of dataStore.photos){
+        const filename = item.previewName || item.file.name;
+        zip.folder("FOTO").file(filename, await item.file.arrayBuffer());
+      }
+
+      log("Generazione ZIP in corso...");
+      const blob=await zip.generateAsync({type:"blob"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      const now=new Date();
+      const baseRef=sanitize((document.getElementById("praticaId").value.trim()) || (document.getElementById("refTag").value.trim()) || "sopralluogo");
+      a.href=url;
+      a.download= baseRef + "_" + now.toISOString().replace(/[:.]/g,"-") + ".zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      log("ZIP generato: "+a.download);
+    });
+
+    refreshAllSummaries();
+    // Topbar quick actions
+    
+    const tbDraftSave = document.getElementById('tbDraftSave');
+    const tbDraftLoad = document.getElementById('tbDraftLoad');
+    const tbDraftClear = document.getElementById('tbDraftClear');
+
+    tbDraftSave?.addEventListener('click', ()=> saveDraft());
+    tbDraftLoad?.addEventListener('click', ()=> loadDraft());
+    tbDraftClear?.addEventListener('click', ()=> { if(confirm("Pulire bozza e foto offline?")) clearDraftAndPhotos(); });
+
+const tbRefresh = document.getElementById('tbRefresh');
+    const tbShare = document.getElementById('tbShare');
+    
+    const tbEmail = document.getElementById('tbEmail');
+
+const tbSend = document.getElementById('tbSend');
+    const tbReset = document.getElementById('tbReset');
+    const tbExtra = document.getElementById('tbExtra');
+
+    tbRefresh?.addEventListener('click', ()=> document.getElementById('refreshNamesBtn')?.click());
+    tbSend?.addEventListener('click', ()=> document.getElementById('generateZipBtn')?.click());
+    tbEmail?.addEventListener('click', ()=> shareZipByEmail());
+    tbReset?.addEventListener('click', ()=> document.getElementById('resetBtn')?.click());
+    tbExtra?.addEventListener('click', ()=>{
+      // Placeholder: assegna tu cosa deve fare
+      alert('Extra: pulsante libero (da assegnare).');
+    });
+
+// Collapse handlers
+document.addEventListener('click', (e)=>{
+  if(e.target.classList.contains('unitaCollapse')){
+    const unit = e.target.closest('[data-unita-uid]');
+    unit.classList.toggle('collapsed');
+    e.target.textContent = unit.classList.contains('collapsed') ? '▸' : '▾';
+  }
+  if(e.target.classList.contains('localeCollapse')){
+    const card = e.target.closest('[data-locale-uid]');
+    const body = card.querySelector('.localeBody');
+    body.classList.toggle('hidden');
+    e.target.textContent = body.classList.contains('hidden') ? '▸' : '▾';
+  }
+});
+
+  </script>
 </body>
 </html>
